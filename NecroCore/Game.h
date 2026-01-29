@@ -11,7 +11,7 @@ namespace NecroCore
 
 		const std::string& GetPlayerName() const;
 
-		std::string& GetCurrentDescription() const;
+		std::string GetCurrentDescription() const;
 
 	private:
 		std::string m_PlayerName;

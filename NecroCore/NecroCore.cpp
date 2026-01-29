@@ -10,9 +10,9 @@ namespace NecroCore
 	{
 		return m_PlayerName;
 	}
-	std::string& Game::GetCurrentDescription() const
+	std::string Game::GetCurrentDescription() const
 	{
-		static std::string description = "You find yourself in a realm of darkness, where the cold whisper of forgotten souls echoes around you.";
-		return description;
+		return "You stand at the edge of a realm of darkness, "
+			"where the cold whisper of forgotten souls brushes past your ear.";
 	}
 }
