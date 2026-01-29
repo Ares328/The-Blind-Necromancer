@@ -44,6 +44,7 @@ Debug/
 Release/
 x64/
 x86/
+packages/
 *.user
 *.suo
 *.db
