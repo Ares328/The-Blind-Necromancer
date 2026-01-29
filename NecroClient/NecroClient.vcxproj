@@ -125,6 +125,11 @@
   <ItemGroup>
     <ClCompile Include="NecroClient.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NecroCore\NecroCore.vcxproj">
+      <Project>{3521582f-27a0-42d2-9de3-4c3adf1060b2}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
