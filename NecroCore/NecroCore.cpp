@@ -18,16 +18,32 @@ namespace NecroCore
 	Game::PulseResult Game::Pulse() const
 	{
 		PulseResult result;
-		result.detectedHostileCount = m_HostileCount;
-		result.detectedFriendlyCount = m_FriendlyCount;
+
+		for (const Entity& entity : m_Entities)
+		{
+			if (entity.faction == Faction::Hostile)
+			{
+				result.detectedHostileCount++;
+			}
+			else if (entity.faction == Faction::Friendly)
+			{
+				result.detectedFriendlyCount++;
+			}
+		}
 		return result;
 	}
 	void Game::SpawnHostile()
 	{
-		m_HostileCount += 1;
+		Entity hostileEntity;
+		hostileEntity.id = m_NextEntityId++;
+		hostileEntity.faction = Faction::Hostile;
+		m_Entities.push_back(hostileEntity);
 	}
 	void Game::SpawnFriendly()
 	{
-		m_FriendlyCount += 1;
+		Entity friendlyEntity;
+		friendlyEntity.id = m_NextEntityId++;
+		friendlyEntity.faction = Faction::Friendly;
+		m_Entities.push_back(friendlyEntity);
 	}
 }

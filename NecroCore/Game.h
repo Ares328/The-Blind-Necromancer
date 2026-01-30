@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include "Entity.h"
 
 namespace NecroCore
 {
@@ -28,7 +30,8 @@ namespace NecroCore
 	private:
 		std::string m_PlayerName;
 
-		int m_HostileCount = 0;
-		int m_FriendlyCount = 0;
+		std::vector<Entity> m_Entities;
+
+		int m_NextEntityId = 1;
 	};
 };
