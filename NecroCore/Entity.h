@@ -11,5 +11,7 @@ namespace NecroCore
 	struct Entity {
 		Faction faction;
 		int id;
+		int x;
+		int y;
 	};
 }

@@ -95,3 +95,17 @@ TEST(GameTests, PulseDetectsMultipleFriendlies)
 	EXPECT_EQ(result.detectedHostileCount, 0);
 	EXPECT_EQ(result.detectedFriendlyCount, 2);
 }
+
+TEST(GameTests, PulseOnlyCountsHostilesWithinRadius)
+{
+	Game game("Ares");
+	game.SpawnHostileAt(1, 0);
+	game.SpawnFriendlyAt(15, 0);
+	auto closePulse = game.Pulse(5);
+	EXPECT_EQ(closePulse.detectedHostileCount, 1);
+	EXPECT_EQ(closePulse.detectedFriendlyCount, 0);
+
+	auto farPulse = game.Pulse(15);
+	EXPECT_EQ(farPulse.detectedHostileCount, 1);
+	EXPECT_EQ(farPulse.detectedFriendlyCount, 1);
+}

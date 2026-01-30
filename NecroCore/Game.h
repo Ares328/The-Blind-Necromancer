@@ -23,9 +23,15 @@ namespace NecroCore
 
 		PulseResult Pulse() const;
 
+		PulseResult Pulse(int radius) const;
+
 		void SpawnHostile();
 
+		void SpawnHostileAt(int x, int y);
+
 		void SpawnFriendly();
+
+		void SpawnFriendlyAt(int x, int y);
 
 	private:
 		std::string m_PlayerName;
