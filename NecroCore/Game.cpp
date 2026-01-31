@@ -38,8 +38,8 @@ namespace NecroCore
 	{
 		PulseResult result;
 
-		const int playerX = 0;
-		const int playerY = 0;
+		const int playerX = m_Player.x;
+		const int playerY = m_Player.y;
 
 		for (const Entity& entity : m_Entities)
 		{
