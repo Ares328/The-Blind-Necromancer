@@ -100,6 +100,7 @@
   <ItemGroup>
     <ClCompile Include="CommandTest.cpp" />
     <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="PlayerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NecroCore\NecroCore.vcxproj">

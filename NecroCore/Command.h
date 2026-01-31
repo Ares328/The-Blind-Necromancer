@@ -11,6 +11,7 @@ namespace NecroCore
 	enum class CommandAction {
 		Unknown,
 		Pulse,
+		Move,
 	};
 
 	using ArgValue = std::variant<int, float, std::string, bool>;

@@ -14,6 +14,16 @@ namespace NecroCore
 	{
 		return m_PlayerName;
 	}
+	const Player& Game::GetPlayer() const
+	{
+		return m_Player;
+	}
+
+	void Game::MovePlayer(int dx, int dy)
+	{
+		m_Player.x += dx;
+		m_Player.y += dy;
+	}
 	std::string Game::GetCurrentDescription() const
 	{
 		return "You stand at the edge of a realm of darkness, "

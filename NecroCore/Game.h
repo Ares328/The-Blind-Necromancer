@@ -4,6 +4,7 @@
 #include <vector>
 #include "Entity.h"
 #include "Command.h"
+#include "Player.h"
 #include "PulseResult.h"
 
 namespace NecroCore
@@ -29,8 +30,12 @@ namespace NecroCore
 		void SpawnFriendly();
 		void SpawnFriendlyAt(int x, int y);
 
+		const Player& GetPlayer() const;
+		void MovePlayer(int dx, int dy);
+
 	private:
 		std::string m_PlayerName;
+		Player m_Player;
 		std::vector<Entity> m_Entities;
 		int m_NextEntityId = 1;
 	};
