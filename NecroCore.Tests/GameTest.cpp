@@ -96,16 +96,71 @@ TEST(GameTests, PulseDetectsMultipleFriendlies)
 	EXPECT_EQ(result.detectedFriendlyCount, 2);
 }
 
-TEST(GameTests, PulseOnlyCountsHostilesWithinRadius)
+TEST(GameTests, PulseOnlyCountsHostilesAlliesWithinRadius)
 {
 	Game game("Ares");
 	game.SpawnHostileAt(1, 0);
 	game.SpawnFriendlyAt(15, 0);
-	auto closePulse = game.Pulse(5);
-	EXPECT_EQ(closePulse.detectedHostileCount, 1);
-	EXPECT_EQ(closePulse.detectedFriendlyCount, 0);
+	auto closePulse5 = game.Pulse(5);
+	EXPECT_EQ(closePulse5.detectedHostileCount, 1);
+	EXPECT_EQ(closePulse5.detectedFriendlyCount, 0);
 
-	auto farPulse = game.Pulse(15);
-	EXPECT_EQ(farPulse.detectedHostileCount, 1);
-	EXPECT_EQ(farPulse.detectedFriendlyCount, 1);
+	auto farPulse15 = game.Pulse(15);
+	EXPECT_EQ(farPulse15.detectedHostileCount, 1);
+	EXPECT_EQ(farPulse15.detectedFriendlyCount, 1);
+}
+
+TEST(GameTests, PulseOnlyCountsWithinRadius)
+{
+	Game game("Ares");
+	game.SpawnHostileAt(3, 4);
+	game.SpawnFriendlyAt(6, 8);
+	auto pulseRadius10 = game.Pulse(10);
+	EXPECT_EQ(pulseRadius10.detectedHostileCount, 1);
+	EXPECT_EQ(pulseRadius10.detectedFriendlyCount, 0);
+	auto pulseRadius15 = game.Pulse(15);
+	EXPECT_EQ(pulseRadius15.detectedHostileCount, 1);
+	EXPECT_EQ(pulseRadius15.detectedFriendlyCount, 1);
+}
+TEST(GameTests, PulseCommandReturnsSuccess)
+{
+	Game game("Ares");
+	auto command = game.ApplyCommand("pulse");
+	EXPECT_TRUE(command.success);
+	EXPECT_EQ(command.action, Game::CommandAction::Pulse);
+}
+TEST(GameTests, PulseCommandReturnsDescription)
+{
+	Game game("Ares");
+	auto command = game.ApplyCommand("pulse");
+	EXPECT_EQ(command.description, "Your senses extend outward.");
+}
+TEST(GameTests, PulseCommandReturnsCorrectArgs)
+{
+	Game game("Ares");
+	auto command = game.ApplyCommand("pulse 15");
+	auto it = command.args.find("radius");
+	ASSERT_NE(it, command.args.end());
+	EXPECT_TRUE(std::holds_alternative<int>(it->second));
+	EXPECT_EQ(std::get<int>(it->second), 15);
+}
+TEST(GameTests, PulseCommandReturnsFalse)
+{
+	Game game("Ares");
+	auto command = game.ApplyCommand("pules 10");
+	EXPECT_FALSE(command.success);
+	EXPECT_EQ(command.action, Game::CommandAction::Unknown);
+}
+TEST(GameTests, PulseCommandReturnsSameAsPulse)
+{
+	Game game("Ares");
+
+	game.SpawnHostileAt(1, 0);
+
+	auto direct = game.Pulse(5);
+
+	auto command = game.ApplyCommand("pulse 5");
+
+	EXPECT_EQ(direct.detectedHostileCount, std::get<Game::PulseResult>(command.payload).detectedHostileCount);
+	EXPECT_EQ(direct.detectedFriendlyCount, std::get<Game::PulseResult>(command.payload).detectedFriendlyCount);
 }
