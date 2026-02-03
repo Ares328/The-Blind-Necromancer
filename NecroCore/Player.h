@@ -6,5 +6,7 @@ namespace NecroCore
 	{
 		int x = 0;
 		int y = 0;
+		int hp = 10;
+		int maxHp = 10;
 	};
 }

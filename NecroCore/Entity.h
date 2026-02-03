@@ -13,5 +13,6 @@ namespace NecroCore
 		int id;
 		int x;
 		int y;
+		int attackDamage;
 	};
 }

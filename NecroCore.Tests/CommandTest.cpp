@@ -316,3 +316,39 @@ TEST(CommandTests, ApplyTurnHostileFromWest)
 	EXPECT_NE(std::string::npos, command.description.find("You move east."));
 	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the west."));
 }
+TEST(CommandTests, ApplyTurnHostileAttackReducesPlayerHp)
+{
+	Game game("Ares");
+
+	const Player& playerBefore = game.GetPlayer();
+	int initialHp = playerBefore.hp;
+
+	game.SpawnHostileAt(playerBefore.x + 1, playerBefore.y - 1);
+
+	CommandResult command = game.ApplyTurn("move north");
+
+	const Player& playerAfter = game.GetPlayer();
+
+	EXPECT_TRUE(command.success);
+	EXPECT_EQ(playerAfter.hp, initialHp - 1);
+	EXPECT_NE(std::string::npos, command.description.find("A hostile claws at you from the east."));
+	EXPECT_FALSE(command.gameOver);
+}
+TEST(CommandTests, ApplyTurnHostileCanKillPlayerAndSetGameOver)
+{
+	Game game("Ares");
+
+	Player& mutablePlayer = const_cast<Player&>(game.GetPlayer());
+	mutablePlayer.hp = 1;
+	mutablePlayer.maxHp = 10;
+
+	game.SpawnHostileAt(mutablePlayer.x + 1, mutablePlayer.y - 1);
+
+	CommandResult command = game.ApplyTurn("move north");
+
+	const Player& playerAfter = game.GetPlayer();
+
+	EXPECT_EQ(playerAfter.hp, 0);
+	EXPECT_TRUE(command.gameOver);
+	EXPECT_NE(std::string::npos, command.description.find("You collapse"));
+}

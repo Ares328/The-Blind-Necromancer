@@ -63,6 +63,8 @@ namespace NecroCore
         oss << "\"success\":" << (result.success ? "true" : "false") << ",";
         oss << "\"action\":\"" << CommandActionToString(result.action) << "\",";
 
+        oss << "\"gameOver\":" << (result.gameOver ? "true" : "false") << ",";
+
         oss << "\"description\":\"" << EscapeJsonString(result.description) << "\",";
 
         oss << "\"args\":{";

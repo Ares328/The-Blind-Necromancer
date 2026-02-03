@@ -107,6 +107,7 @@ namespace NecroCore
 		hostileEntity.faction = Faction::Hostile;
 		hostileEntity.x = x;
 		hostileEntity.y = y;
+		hostileEntity.attackDamage = 1;
 		m_Entities.push_back(hostileEntity);
 	}
 	void Game::SpawnFriendlyAt(int x, int y)
@@ -118,6 +119,7 @@ namespace NecroCore
 		friendlyEntity.faction = Faction::Friendly;
 		friendlyEntity.x = x;
 		friendlyEntity.y = y;
+		friendlyEntity.attackDamage = 1;
 		m_Entities.push_back(friendlyEntity);
 	}
 	void Game::SpawnHostile()
@@ -192,6 +194,7 @@ namespace NecroCore
 		};
 
 		bool anyHostileActed = false;
+		bool playerDiedThisTurn = false;
 		std::cout << "[ProcessHostileTurn] Processing " << m_Entities.size() << " entities.\n";
 		for (Entity& entity : m_Entities)
 		{
@@ -212,9 +215,23 @@ namespace NecroCore
 			const bool adjacent =
 				(std::abs(entity.x - m_Player.x) + std::abs(entity.y - m_Player.y)) == 1;
 
-			if (adjacent)
+			if (adjacent && !playerDiedThisTurn)
 			{
 				anyHostileActed = true;
+
+				if (m_Player.hp > 0)
+				{
+					m_Player.hp -= entity.attackDamage;
+					if (m_Player.hp < 0)
+					{
+						m_Player.hp = 0;
+					}
+					if (m_Player.hp == 0)
+					{
+						playerDiedThisTurn = true;
+					}
+				}
+
 				std::string direction;
 				if (entity.x < m_Player.x) direction = "west";
 				else if (entity.x > m_Player.x) direction = "east";
@@ -228,7 +245,7 @@ namespace NecroCore
 			const int targetX = entity.x + dx;
 			const int targetY = entity.y + dy;
 
-			if (m_Map.IsWalkable(targetX, targetY))
+			if (m_Map.IsWalkable(targetX, targetY) && !playerDiedThisTurn)
 			{
 				entity.x = targetX;
 				entity.y = targetY;
@@ -250,11 +267,20 @@ namespace NecroCore
 		}
 
 		// TODO - Random chance for ambient events if no hostiles acted
-		if (!anyHostileActed)
+		if (!anyHostileActed && !playerDiedThisTurn)
 		{
 			appendSeparator();
 			oss << "The world waits in uneasy silence.";
 		}
+
+		// TODO - Random death message variations
+		if (playerDiedThisTurn)
+		{
+			appendSeparator();
+			oss << "You collapse as the last of your strength drains away.";
+			result.gameOver = true;
+		}
+
 		std::cout << "[ProcessHostileTurn] Final description: " << oss.str() << "\n";
 
 		result.description = oss.str();

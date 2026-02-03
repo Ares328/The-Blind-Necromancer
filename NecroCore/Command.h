@@ -32,5 +32,6 @@ namespace NecroCore
 		CommandPayload payload;
 
 		bool success = false;
+		bool gameOver = false;
 	};
 }
