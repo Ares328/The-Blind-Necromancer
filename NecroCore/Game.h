@@ -6,6 +6,9 @@
 #include "Command.h"
 #include "Player.h"
 #include "PulseResult.h"
+#include "MoveResult.h"
+#include "SummonResult.h"
+#include "Map.h"
 
 namespace NecroCore
 {
@@ -31,12 +34,21 @@ namespace NecroCore
 		void SpawnFriendlyAt(int x, int y);
 
 		const Player& GetPlayer() const;
-		void MovePlayer(int dx, int dy);
+		MoveResult MovePlayer(int dx, int dy);
+
+		SummonResult SummonFriendlyInFrontPlayer();
+
+		const Map& GetMap() const { return m_Map; }
 
 	private:
 		std::string m_PlayerName;
 		Player m_Player;
 		std::vector<Entity> m_Entities;
 		int m_NextEntityId = 1;
+		
+
+		Map m_Map;
+
+		void InitializeDefaultMap();
 	};
 };

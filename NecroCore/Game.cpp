@@ -1,6 +1,9 @@
 #include "Game.h"
 #include "PulseResult.h"
+#include "MoveResult.h"
+#include "SummonResult.h"
 
+#include <iostream>
 #include <sstream>
 #include <cstdlib>
 
@@ -9,6 +12,7 @@ namespace NecroCore
 	Game::Game(const std::string& playerName)
 		: m_PlayerName(playerName)
 	{
+		InitializeDefaultMap();
 	}
 	const std::string& Game::GetPlayerName() const
 	{
@@ -19,10 +23,41 @@ namespace NecroCore
 		return m_Player;
 	}
 
-	void Game::MovePlayer(int dx, int dy)
+	MoveResult Game::MovePlayer(int dx, int dy)
 	{
-		m_Player.x += dx;
-		m_Player.y += dy;
+		int oldX = m_Player.x;
+		int oldY = m_Player.y;
+
+		int newX = oldX + dx;
+		int newY = oldY + dy;
+
+		std::cout << "[MovePlayer] from (" << oldX << "," << oldY
+			<< ") to (" << newX << "," << newY << ")\n";
+
+		bool walkable = m_Map.IsWalkable(newX, newY);
+		std::cout << "[MovePlayer] IsWalkable(" << newX << "," << newY
+			<< ") = " << (walkable ? "true" : "false") << "\n";
+
+		if (!walkable)
+		{
+			MoveResult result;
+			result.oldX = oldX;
+			result.oldY = oldY;
+			result.newX = oldX;
+			result.newY = oldY;
+			return result;
+		}
+
+		m_Player.x = newX;
+		m_Player.y = newY;
+
+		MoveResult result;
+		result.oldX = oldX;
+		result.oldY = oldY;
+		result.newX = newX;
+		result.newY = newY;
+
+		return result;
 	}
 	std::string Game::GetCurrentDescription() const
 	{
@@ -65,6 +100,8 @@ namespace NecroCore
 	}
 	void Game::SpawnHostileAt(int x, int y)
 	{
+		if (!m_Map.IsWalkable(x, y)) return;
+
 		Entity hostileEntity;
 		hostileEntity.id = m_NextEntityId++;
 		hostileEntity.faction = Faction::Hostile;
@@ -74,6 +111,8 @@ namespace NecroCore
 	}
 	void Game::SpawnFriendlyAt(int x, int y)
 	{
+		if (!m_Map.IsWalkable(x, y)) return;
+
 		Entity friendlyEntity;
 		friendlyEntity.id = m_NextEntityId++;
 		friendlyEntity.faction = Faction::Friendly;
@@ -83,10 +122,41 @@ namespace NecroCore
 	}
 	void Game::SpawnHostile()
 	{
-		SpawnHostileAt(0, 0);
+		// defaults for testing
+		SpawnHostileAt(m_Player.x, m_Player.y);
 	}
 	void Game::SpawnFriendly()
 	{
-		SpawnFriendlyAt(0, 0);
+		// defaults for testing
+		SpawnFriendlyAt(m_Player.x, m_Player.y);
+	}
+	SummonResult Game::SummonFriendlyInFrontPlayer()
+	{
+		SpawnFriendlyAt(m_Player.x, m_Player.y + 1);
+
+		const Entity& e = m_Entities.back();
+
+		SummonResult result;
+		result.entityId = e.id;
+		result.x = e.x;
+		result.y = e.y;
+
+		return result;
+	}
+	void Game::InitializeDefaultMap()
+	{
+		// Player starts at (6,2)
+		std::vector<std::string> lines = {
+			"##########",
+			"#.........#",
+			"#.........#",
+			"#.........#",
+			"##########",
+		};
+
+		m_Map.LoadFromAscii(lines);
+
+		m_Player.x = 6;
+		m_Player.y = 2;
 	}
 }

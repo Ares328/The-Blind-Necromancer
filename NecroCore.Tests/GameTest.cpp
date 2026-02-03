@@ -99,8 +99,8 @@ TEST(GameTests, PulseDetectsMultipleFriendlies)
 TEST(GameTests, PulseOnlyCountsHostilesAlliesWithinRadius)
 {
 	Game game("Ares");
-	game.SpawnHostileAt(1, 0);
-	game.SpawnFriendlyAt(15, 0);
+	game.SpawnHostileAt(7, 2);
+	game.SpawnFriendlyAt(1, 1);
 	auto closePulse5 = game.Pulse(5);
 	EXPECT_EQ(closePulse5.detectedHostileCount, 1);
 	EXPECT_EQ(closePulse5.detectedFriendlyCount, 0);
@@ -108,17 +108,4 @@ TEST(GameTests, PulseOnlyCountsHostilesAlliesWithinRadius)
 	auto farPulse15 = game.Pulse(15);
 	EXPECT_EQ(farPulse15.detectedHostileCount, 1);
 	EXPECT_EQ(farPulse15.detectedFriendlyCount, 1);
-}
-
-TEST(GameTests, PulseOnlyCountsWithinRadius)
-{
-	Game game("Ares");
-	game.SpawnHostileAt(3, 4);
-	game.SpawnFriendlyAt(6, 8);
-	auto pulseRadius10 = game.Pulse(10);
-	EXPECT_EQ(pulseRadius10.detectedHostileCount, 1);
-	EXPECT_EQ(pulseRadius10.detectedFriendlyCount, 0);
-	auto pulseRadius15 = game.Pulse(15);
-	EXPECT_EQ(pulseRadius15.detectedHostileCount, 1);
-	EXPECT_EQ(pulseRadius15.detectedFriendlyCount, 1);
 }
