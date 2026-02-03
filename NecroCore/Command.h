@@ -6,6 +6,7 @@
 #include "PulseResult.h"
 #include "MoveResult.h"
 #include "SummonResult.h"
+#include "AttackResult.h"
 
 namespace NecroCore
 {
@@ -15,12 +16,13 @@ namespace NecroCore
 		Pulse,
 		Move,
 		Summon,
+		Attack,
 	};
 
 	using ArgValue = std::variant<int, float, std::string, bool>;
 	using ArgMap = std::unordered_map<std::string, ArgValue>;
 
-	using CommandPayload = std::variant<std::monostate, PulseResult, MoveResult, SummonResult>;
+	using CommandPayload = std::variant<std::monostate, PulseResult, MoveResult, SummonResult, AttackResult>;
 
 	struct CommandResult
 	{

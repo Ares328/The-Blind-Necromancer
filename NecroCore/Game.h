@@ -31,6 +31,7 @@ namespace NecroCore
 
 		void SpawnHostile();
 		void SpawnHostileAt(int x, int y);
+		void SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage);
 		void SpawnFriendly();
 		void SpawnFriendlyAt(int x, int y);
 

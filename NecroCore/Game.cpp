@@ -107,7 +107,22 @@ namespace NecroCore
 		hostileEntity.faction = Faction::Hostile;
 		hostileEntity.x = x;
 		hostileEntity.y = y;
+		hostileEntity.hp = 10;
+		hostileEntity.maxHp = 10;
 		hostileEntity.attackDamage = 1;
+		m_Entities.push_back(hostileEntity);
+	}
+	void Game::SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage)
+	{
+		if (!m_Map.IsWalkable(x, y)) return;
+		Entity hostileEntity;
+		hostileEntity.id = m_NextEntityId++;
+		hostileEntity.faction = Faction::Hostile;
+		hostileEntity.x = x;
+		hostileEntity.y = y;
+		hostileEntity.hp = hp;
+		hostileEntity.maxHp = hp;
+		hostileEntity.attackDamage = attackDamage;
 		m_Entities.push_back(hostileEntity);
 	}
 	void Game::SpawnFriendlyAt(int x, int y)
@@ -119,6 +134,8 @@ namespace NecroCore
 		friendlyEntity.faction = Faction::Friendly;
 		friendlyEntity.x = x;
 		friendlyEntity.y = y;
+		friendlyEntity.hp = 5;
+		friendlyEntity.maxHp = 5;
 		friendlyEntity.attackDamage = 1;
 		m_Entities.push_back(friendlyEntity);
 	}

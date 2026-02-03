@@ -14,5 +14,7 @@ namespace NecroCore
 		int x;
 		int y;
 		int attackDamage;
+		int hp;
+		int maxHp;
 	};
 }

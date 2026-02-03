@@ -141,6 +141,7 @@
     <ClCompile Include="Map.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttackResult.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSerialization.h" />
     <ClInclude Include="Entity.h" />

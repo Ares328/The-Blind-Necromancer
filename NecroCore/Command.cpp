@@ -3,6 +3,7 @@
 #include "PulseResult.h"
 #include "MoveResult.h"
 #include "SummonResult.h"
+#include "AttackResult.h"
 
 #include <sstream>
 
@@ -76,6 +77,22 @@ namespace NecroCore
 
 			result.args["creature"] = creature;
 			result.description = "Summon command parsed.";
+			result.success = true;
+		}
+		else if (verb == "attack")
+		{
+			result.action = CommandAction::Attack;
+
+			std::string direction;
+			if (!(iss >> direction))
+			{
+				result.description = "You lash out blindly at the darkness.";
+				result.success = false;
+				return result;
+			}
+
+			result.args["direction"] = direction;
+			result.description = "Attack command parsed.";
 			result.success = true;
 		}
 		else
@@ -169,6 +186,79 @@ namespace NecroCore
 				finalResult.payload = summonResult;
 				finalResult.description = "You summon a loyal servant from the shadows in front of you.";
 				finalResult.success = true;
+				break;
+			}
+			case CommandAction::Attack:
+			{
+				std::string direction;
+
+				auto it = command.args.find("direction");
+				if (it == command.args.end() || !std::holds_alternative<std::string>(it->second))
+				{
+					finalResult.description = "You lash out blindly at the darkness.";
+					finalResult.success = false;
+					break;
+				}
+
+				direction = std::get<std::string>(it->second);
+
+				int dx = 0;
+				int dy = 0;
+
+				if (direction == "north") { dy = -1; }
+				else if (direction == "south") { dy = 1; }
+				else if (direction == "west") { dx = -1; }
+				else if (direction == "east") { dx = 1; }
+				else
+				{
+					finalResult.description = "You swing " + direction + ", but the notion of that direction escapes this realm.";
+					finalResult.success = false;
+					break;
+				}
+
+				const int targetX = m_Player.x + dx;
+				const int targetY = m_Player.y + dy;
+
+				bool hit = false;
+
+				for (auto entityIteration = m_Entities.begin(); entityIteration != m_Entities.end();)
+				{
+					Entity& entity = *entityIteration;
+					if (entity.faction == Faction::Hostile &&
+						entity.x == targetX && entity.y == targetY)
+					{
+						hit = true;
+						const int kPlayerDamage = 1;
+						entity.hp -= kPlayerDamage;
+
+						if (entity.hp <= 0)
+						{
+							entityIteration = m_Entities.erase(entityIteration);
+							finalResult.description = "You strike " + direction + " and your foe crumbles into dust.";
+						}
+						else
+						{
+							++entityIteration;
+							finalResult.description = "You deal a blow and hear a grunt " + direction + ".";
+						}
+						break;
+					}
+					else
+					{
+						++entityIteration;
+					}
+				}
+
+				if (!hit)
+				{
+					finalResult.description = "You strike " + direction + " but hit nothing.";
+					finalResult.success = false;
+				}
+				else
+				{
+					finalResult.success = true;
+				}
+
 				break;
 			}
 			case CommandAction::Unknown:
