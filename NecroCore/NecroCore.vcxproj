@@ -138,13 +138,17 @@
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Map.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="MoveResult.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PulseResult.h" />
+    <ClInclude Include="SummonResult.h" />
+    <ClInclude Include="Map.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
