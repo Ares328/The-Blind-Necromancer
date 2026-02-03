@@ -159,4 +159,104 @@ namespace NecroCore
 		m_Player.x = 6;
 		m_Player.y = 2;
 	}
+	CommandResult Game::ApplyTurn(const std::string& command)
+	{
+		CommandResult playerResult = ApplyCommand(command);
+
+		if (!playerResult.success)
+		{
+			return playerResult;
+		}
+
+		ProcessHostileTurn(playerResult);
+
+		return playerResult;
+	}
+	void Game::ProcessHostileTurn(CommandResult& result)
+	{
+		std::ostringstream oss;
+		oss << result.description;
+
+		bool firstAppend = true;
+		auto appendSeparator = [&]()
+		{
+			if (firstAppend)
+			{
+				oss << "\n";
+				firstAppend = false;
+			}
+			else
+			{
+				oss << "\n";
+			}
+		};
+
+		bool anyHostileActed = false;
+		std::cout << "[ProcessHostileTurn] Processing " << m_Entities.size() << " entities.\n";
+		for (Entity& entity : m_Entities)
+		{
+			if (entity.faction != Faction::Hostile)
+			{
+				continue;
+			}
+
+			int dx = 0;
+			int dy = 0;
+
+			if (entity.x < m_Player.x) dx = 1;
+			else if (entity.x > m_Player.x) dx = -1;
+
+			if (entity.y < m_Player.y) dy = 1;
+			else if (entity.y > m_Player.y) dy = -1;
+
+			const bool adjacent =
+				(std::abs(entity.x - m_Player.x) + std::abs(entity.y - m_Player.y)) == 1;
+
+			if (adjacent)
+			{
+				anyHostileActed = true;
+				std::string direction;
+				if (entity.x < m_Player.x) direction = "west";
+				else if (entity.x > m_Player.x) direction = "east";
+				else if (entity.y < m_Player.y) direction = "north";
+				else if (entity.y > m_Player.y) direction = "south";
+				appendSeparator();
+				oss << "A hostile claws at you from the " << direction << ".";
+				continue;
+			}
+
+			const int targetX = entity.x + dx;
+			const int targetY = entity.y + dy;
+
+			if (m_Map.IsWalkable(targetX, targetY))
+			{
+				entity.x = targetX;
+				entity.y = targetY;
+				anyHostileActed = true;
+				appendSeparator();
+				oss << "A hostile shuffles closer from the ";
+				if (dx < 0)      oss << "east";
+				else if (dx > 0) oss << "west";
+				else if (dy < 0) oss << "south";
+				else if (dy > 0) oss << "north";
+				oss << ".";
+			}
+			else
+			{
+				// Blocked; flavor text optional
+				// anyHostileActed = true;
+				// oss << "A hostile bumps into an unseen obstacle.";
+			}
+		}
+
+		// TODO - Random chance for ambient events if no hostiles acted
+		if (!anyHostileActed)
+		{
+			appendSeparator();
+			oss << "The world waits in uneasy silence.";
+		}
+		std::cout << "[ProcessHostileTurn] Final description: " << oss.str() << "\n";
+
+		result.description = oss.str();
+	}
 }

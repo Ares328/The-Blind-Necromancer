@@ -27,6 +27,7 @@ namespace NecroCore
 		CommandResult ApplyCommand(const std::string& command);
 		CommandResult ParseCommand(const std::string& command);
 		CommandResult ExecuteCommand(const CommandResult& command);
+		CommandResult ApplyTurn(const std::string& command);
 
 		void SpawnHostile();
 		void SpawnHostileAt(int x, int y);
@@ -50,5 +51,7 @@ namespace NecroCore
 		Map m_Map;
 
 		void InitializeDefaultMap();
+
+		void ProcessHostileTurn(CommandResult& result);
 	};
 };
