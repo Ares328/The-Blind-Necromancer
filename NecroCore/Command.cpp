@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "Command.h"
 #include "PulseResult.h"
+#include "MoveResult.h"
+#include "SummonResult.h"
 
 #include <sstream>
 
@@ -58,6 +60,22 @@ namespace NecroCore
 
 			result.args["direction"] = direction;
 			result.description = "Move command parsed.";
+			result.success = true;
+		}
+		else if (verb == "summon")
+		{
+			result.action = CommandAction::Summon;
+
+			std::string creature;
+			if (!(iss >> creature))
+			{
+				result.description = "Summon what?";
+				result.success = false;
+				return result;
+			}
+
+			result.args["creature"] = creature;
+			result.description = "Summon command parsed.";
 			result.success = true;
 		}
 		else
@@ -120,9 +138,36 @@ namespace NecroCore
 					break;
 				}
 
-				MovePlayer(dx, dy);
-
+				MoveResult moveResult = MovePlayer(dx, dy);
+				if (moveResult.newX == moveResult.oldX && moveResult.newY == moveResult.oldY)
+				{
+					finalResult.description = "You bump into an obstacle and cannot move " + direction + ".";
+					finalResult.success = false;
+					break;
+				}
+				finalResult.payload = moveResult;
 				finalResult.description = "You move " + direction + ".";
+				finalResult.success = true;
+				break;
+			}
+			case CommandAction::Summon:
+			{
+				auto it = command.args.find("creature");
+				if (it == command.args.end() || !std::holds_alternative<std::string>(it->second))
+				{
+					finalResult.description = "You mutter nonsense; nothing answers.";
+					finalResult.success = false;
+					break;
+				}
+
+				const std::string& creature = std::get<std::string>(it->second);
+
+				(void)creature;
+
+				SummonResult summonResult = SummonFriendlyInFrontPlayer();
+
+				finalResult.payload = summonResult;
+				finalResult.description = "You summon a loyal servant from the shadows in front of you.";
 				finalResult.success = true;
 				break;
 			}
