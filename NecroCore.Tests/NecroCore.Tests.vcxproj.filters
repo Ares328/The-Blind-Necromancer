@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="PlayerTest.cpp">
+      <Filter>Units</Filter>
+    </ClCompile>
+    <ClCompile Include="PulseTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
+    <ClCompile Include="SummonTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
+    <ClCompile Include="TurnTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Command">
+      <UniqueIdentifier>{bcdc5268-0139-4ec6-bcee-82cbf60a5761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Units">
+      <UniqueIdentifier>{b7981d41-9407-43e2-8d38-506a87c4246d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

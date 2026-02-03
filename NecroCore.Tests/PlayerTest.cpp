@@ -5,7 +5,7 @@
 
 using namespace NecroCore;
 
-TEST(PlayerTests, PlayerStartsAtOrigin)
+TEST(PlayerTest, PlayerStartsAtOrigin)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
@@ -13,7 +13,7 @@ TEST(PlayerTests, PlayerStartsAtOrigin)
 	EXPECT_EQ(player.x, 6);
 	EXPECT_EQ(player.y, 2);
 }
-TEST(PlayerTests, PlayerCanMove)
+TEST(PlayerTest, PlayerCanMove)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
@@ -23,7 +23,7 @@ TEST(PlayerTests, PlayerCanMove)
 	EXPECT_EQ(player.x, 7);
 	EXPECT_EQ(player.y, 1);
 }
-TEST(PlayerTests, PlayerCanMoveMultipleTimes)
+TEST(PlayerTest, PlayerCanMoveMultipleTimes)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
@@ -36,14 +36,14 @@ TEST(PlayerTests, PlayerCanMoveMultipleTimes)
 	EXPECT_EQ(player.x, 5);
 	EXPECT_EQ(player.y, 1);
 }
-TEST(PlayerTests, NameStillTheSameAfterMovement)
+TEST(PlayerTest, NameStillTheSameAfterMovement)
 {
 	Game game("Ares");
 	EXPECT_EQ(game.GetPlayerName(), "Ares");
 	game.MovePlayer(10, 10);
 	EXPECT_EQ(game.GetPlayerName(), "Ares");
 }
-TEST(PlayerTests, MultiplePlayersHaveIndependentPositions)
+TEST(PlayerTest, MultiplePlayersHaveIndependentPositions)
 {
 	Game game1("Ares");
 	Game game2("Zephyr");
@@ -60,7 +60,7 @@ TEST(PlayerTests, MultiplePlayersHaveIndependentPositions)
 	EXPECT_EQ(player2.x, 4);
 	EXPECT_EQ(player2.y, 1);
 }
-TEST(PlayerTests, PlayerPositionUnaffectedByPulse)
+TEST(PlayerTest, PlayerPositionUnaffectedByPulse)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
@@ -76,7 +76,7 @@ TEST(PlayerTests, PlayerPositionUnaffectedByPulse)
 	EXPECT_EQ(player.x, 7);
 	EXPECT_EQ(player.y, 3);
 }
-TEST(PlayerTests, PlayerPositionAffectsSeeingEnemies)
+TEST(PlayerTest, PlayerPositionAffectsSeeingEnemies)
 {
 	Game game("Ares");
 	game.SpawnHostileAt(1, 1);
@@ -84,7 +84,7 @@ TEST(PlayerTests, PlayerPositionAffectsSeeingEnemies)
 	EXPECT_EQ(pulseAtOrigin.detectedHostileCount, 0);
 	EXPECT_EQ(pulseAtOrigin.detectedFriendlyCount, 0);
 }
-TEST(PlayerTests, PlayerCanReturnToOrigin)
+TEST(PlayerTest, PlayerCanReturnToOrigin)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
@@ -97,7 +97,7 @@ TEST(PlayerTests, PlayerCanReturnToOrigin)
 	EXPECT_EQ(player.x, 6);
 	EXPECT_EQ(player.y, 2);
 }
-TEST(PlayerTests, PlayerMovementDoesNotAffectOtherGameStates)
+TEST(PlayerTest, PlayerMovementDoesNotAffectOtherGameStates)
 {
 	Game game("Ares");
 	game.SpawnHostileAt(6, 3);
@@ -112,7 +112,7 @@ TEST(PlayerTests, PlayerMovementDoesNotAffectOtherGameStates)
 	EXPECT_EQ(pulseAfterMove.detectedFriendlyCount, 0);
 }
 
-TEST(PlayerTests, PlayerMovementBlockedAtAir)
+TEST(PlayerTest, PlayerMovementBlockedAtAir)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
@@ -126,7 +126,7 @@ TEST(PlayerTests, PlayerMovementBlockedAtAir)
 	EXPECT_EQ(moveResult.newX, 6);
 	EXPECT_EQ(moveResult.newY, 2);
 }
-TEST(PlayerTests, PlayerMovementBlockedAtWall)
+TEST(PlayerTest, PlayerMovementBlockedAtWall)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();

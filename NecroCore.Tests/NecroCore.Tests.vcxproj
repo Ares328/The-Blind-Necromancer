@@ -98,9 +98,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CommandTest.cpp" />
+    <ClCompile Include="AttackTest.cpp" />
     <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="MoveTest.cpp" />
     <ClCompile Include="PlayerTest.cpp" />
+    <ClCompile Include="PulseTest.cpp" />
+    <ClCompile Include="SummonTest.cpp" />
+    <ClCompile Include="TurnTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NecroCore\NecroCore.vcxproj">

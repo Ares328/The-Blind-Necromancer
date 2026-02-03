@@ -19,48 +19,60 @@
     <Filter Include="Source Files\Map">
       <UniqueIdentifier>{34896443-8bf6-45e8-9751-2f29f2b58f15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Command">
+      <UniqueIdentifier>{a4e87d87-0f3a-4db0-b088-f6ee8bedbd11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command\Results">
+      <UniqueIdentifier>{71fc0c34-8f98-4c14-a4ee-638354bdcb8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command">
+      <UniqueIdentifier>{5f04a7d5-5a67-4146-91d3-3c1107f1a39e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Units">
+      <UniqueIdentifier>{ddaeb583-333b-47c7-8ac5-49d2089098fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Map.cpp">
       <Filter>Source Files\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>Source Files\Command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PulseResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SummonResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Header Files\Map</Filter>
     </ClInclude>
     <ClInclude Include="CommandSerialization.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Header Files\Command</Filter>
     </ClInclude>
     <ClInclude Include="AttackResult.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Command\Results</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveResult.h">
+      <Filter>Header Files\Command\Results</Filter>
+    </ClInclude>
+    <ClInclude Include="PulseResult.h">
+      <Filter>Header Files\Command\Results</Filter>
+    </ClInclude>
+    <ClInclude Include="SummonResult.h">
+      <Filter>Header Files\Command\Results</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Units</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
