@@ -103,6 +103,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\User\Downloads\v0.30.2 source code\yhirose-cpp-httplib-dc6faf5;D:\C++Projects\TheBlindNecromancer\NecroCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +131,9 @@
     <ProjectReference Include="..\NecroCore\NecroCore.vcxproj">
       <Project>{3521582f-27a0-42d2-9de3-4c3adf1060b2}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\User\Downloads\v0.30.2 source code\yhirose-cpp-httplib-dc6faf5\httplib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
