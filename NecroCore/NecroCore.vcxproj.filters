@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Units">
       <UniqueIdentifier>{ddaeb583-333b-47c7-8ac5-49d2089098fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Units">
+      <UniqueIdentifier>{d75be625-efb3-43f1-8cf9-c7eef6d6e371}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="Command.cpp">
       <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Units</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Header Files\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="SummonCommandResult.h">
+      <Filter>Header Files\Command\Results</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -110,9 +110,13 @@ namespace NecroCore
         {
             const auto& s = std::get<SummonResult>(result.payload);
             oss << "\"type\":\"summon\","
-                << "\"entityId\":" << s.entityId << ","
-                << "\"x\":" << s.x << ","
-                << "\"y\":" << s.y;
+                << "\"entityId\":" << s.summonedEntity.id << ","
+                << "\"x\":" << s.summonedEntity.x << ","
+                << "\"y\":" << s.summonedEntity.y << ","
+                << "\"faction\":" << static_cast<int>(s.summonedEntity.faction) << ","
+                << "\"hp\":" << s.summonedEntity.hp << ","
+                << "\"maxHp\":" << s.summonedEntity.maxHp << ","
+                << "\"attackDamage\":" << s.summonedEntity.attackDamage;
             hasPayload = true;
         }
 

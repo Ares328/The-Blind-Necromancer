@@ -20,6 +20,9 @@
     <ClCompile Include="AttackTest.cpp">
       <Filter>Command</Filter>
     </ClCompile>
+    <ClCompile Include="SummonCommandTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

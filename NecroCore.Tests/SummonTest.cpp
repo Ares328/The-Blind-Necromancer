@@ -72,9 +72,16 @@ TEST(SummonTest, SummonCommandPopulatesPayload)
 	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
 	SummonResult res = std::get<SummonResult>(command.payload);
 
-	// Summoned in front of player position
 	const Player& player = game.GetPlayer();
-	EXPECT_EQ(res.x, player.x);
-	EXPECT_EQ(res.y, player.y + 1);
-	EXPECT_GT(res.entityId, 0);
+	EXPECT_EQ(res.summonedEntity.x, player.x);
+	EXPECT_EQ(res.summonedEntity.y, player.y + 1);
+	EXPECT_GT(res.summonedEntity.id, 0);
+}
+TEST(SummonTest, SummonedEntityHasCorrectFaction)
+{
+	Game game("Ares");
+	auto command = game.ApplyCommand("summon skeleton");
+	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
+	SummonResult res = std::get<SummonResult>(command.payload);
+	EXPECT_EQ(res.summonedEntity.faction, Faction::Friendly);
 }

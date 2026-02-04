@@ -1,11 +1,10 @@
 #pragma once
+#include "Entity.h"
 
 namespace NecroCore
 {
 	struct SummonResult
 	{
-		int entityId = 0;
-		int x = 0;
-		int y = 0;
+		Entity summonedEntity;
 	};
 }

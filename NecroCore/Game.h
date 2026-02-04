@@ -53,6 +53,7 @@ namespace NecroCore
 
 		void InitializeDefaultMap();
 
+		void ProcessSummonedTurn(CommandResult& result);
 		void ProcessHostileTurn(CommandResult& result);
 	};
 };

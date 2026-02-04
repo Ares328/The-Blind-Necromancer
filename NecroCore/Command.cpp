@@ -4,6 +4,7 @@
 #include "MoveResult.h"
 #include "SummonResult.h"
 #include "AttackResult.h"
+#include "SummonCommandResult.h"
 
 #include <sstream>
 
@@ -95,6 +96,24 @@ namespace NecroCore
 			result.description = "Attack command parsed.";
 			result.success = true;
 		}
+		else if (verb == "command")
+		{
+			result.action = CommandAction::SummonCommand;
+
+			std::string target;
+			std::string order;
+			if (!(iss >> target >> order))
+			{
+				result.description = "Your will is unclear; your minions hesitate.";
+				result.success = false;
+				return result;
+			}
+
+			result.args["target"] = target; // "all" | "skeleton#1"
+			result.args["order"] = order;  // "follow" | "guard" | "attack"
+			result.description = "Command parsed.";
+			result.success = true;
+		}
 		else
 		{
 			result.action = CommandAction::Unknown;
@@ -179,7 +198,12 @@ namespace NecroCore
 
 				const std::string& creature = std::get<std::string>(it->second);
 
-				(void)creature;
+				if (creature != "skeleton")
+				{
+					finalResult.description = "Your invocation falters: such a creature does not heed your call.";
+					finalResult.success = false;
+					break;
+				}
 
 				SummonResult summonResult = SummonFriendlyInFrontPlayer();
 
@@ -259,6 +283,66 @@ namespace NecroCore
 					finalResult.success = true;
 				}
 
+				break;
+			}
+			case CommandAction::SummonCommand:
+			{
+				auto itTarget = command.args.find("target");
+				auto itOrder = command.args.find("order");
+				if (itTarget == command.args.end() || itOrder == command.args.end() ||
+					!std::holds_alternative<std::string>(itTarget->second) ||
+					!std::holds_alternative<std::string>(itOrder->second))
+				{
+					finalResult.description = "Your will is fractured; no clear order is given.";
+					finalResult.success = false;
+					break;
+				}
+
+				const std::string& target = std::get<std::string>(itTarget->second);
+				const std::string& order = std::get<std::string>(itOrder->second);
+
+				if (target != "all")
+				{
+					finalResult.description = "Only the collective heed your call for now.";
+					finalResult.success = false;
+					break;
+				}
+
+				EntityState newState;
+				if (order == "follow")
+				{
+					newState = EntityState::FollowPlayer;
+				}
+				else if (order == "guard")
+				{
+					newState = EntityState::Guard;
+				}
+				else if (order == "attack")
+				{
+					newState = EntityState::AttackHostiles;
+				}
+				else
+				{
+					finalResult.description = "Your command lacks focus; your minions do not understand.";
+					finalResult.success = false;
+					break;
+				}
+
+				for (Entity& e : m_Entities)
+				{
+					if (e.faction != Faction::Friendly)
+						continue;
+
+					e.aiState = newState;
+					if (newState == EntityState::Guard)
+					{
+						e.guardX = e.x;
+						e.guardY = e.y;
+					}
+				}
+
+				finalResult.description = "Your will ripples through the ranks of your summoned allies.";
+				finalResult.success = true;
 				break;
 			}
 			case CommandAction::Unknown:
