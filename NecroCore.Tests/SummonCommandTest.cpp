@@ -8,12 +8,12 @@ TEST(SummonCommandTest, SummonedEntityMovesTowardHostile)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileAt(player.x + 3, player.y);
+	game.SpawnHostileAt(player.x + 3, player.y + 1);
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally stalks a distant foe."));
-	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the east."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile lashes out at your summoned ally."));
 }
 TEST(SummonCommandTest, SummonedEntityAttacksHostile)
 {
@@ -34,7 +34,7 @@ TEST(SummonCommandTest, SummonedEntityAttacksHostileAndGetsAttacked)
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally strikes at a foe."));
-	EXPECT_NE(std::string::npos, command.description.find("A hostile claws at your summoned ally."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile lashes out at your summoned ally."));
 }
 TEST(SummonCommandTest, SummonedEntityKillsHostile)
 {
@@ -44,8 +44,7 @@ TEST(SummonCommandTest, SummonedEntityKillsHostile)
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally strikes at a foe."));
-	EXPECT_NE(std::string::npos, command.description.find("A hostile crumbles into dust."));
+	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally's foe crumbles into dust."));
 }
 TEST(SummonCommandTest, SummonedEntityDoesNotAttackWhenNoHostiles)
 {

@@ -11,9 +11,8 @@ namespace NecroCore
 	enum class EntityState {
 		Idle,
 		FollowPlayer,
-		AttackPlayer,
 		Guard,
-		AttackHostiles
+		Attack
 	};
 
 	struct Entity {

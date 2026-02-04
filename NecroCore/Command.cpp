@@ -319,7 +319,7 @@ namespace NecroCore
 				}
 				else if (order == "attack")
 				{
-					newState = EntityState::AttackHostiles;
+					newState = EntityState::Attack;
 				}
 				else
 				{

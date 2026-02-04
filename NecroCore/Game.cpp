@@ -108,7 +108,7 @@ namespace NecroCore
 		hostileEntity.x = x;
 		hostileEntity.y = y;
 		hostileEntity.aggroRange = 5;
-		hostileEntity.aiState = EntityState::AttackPlayer;
+		hostileEntity.aiState = EntityState::Attack;
 		hostileEntity.hp = 10;
 		hostileEntity.maxHp = 10;
 		hostileEntity.attackDamage = 1;
@@ -126,7 +126,7 @@ namespace NecroCore
 		hostileEntity.hp = hp;
 		hostileEntity.maxHp = hp;
 		hostileEntity.attackDamage = attackDamage;
-		hostileEntity.aiState = EntityState::AttackPlayer;
+		hostileEntity.aiState = EntityState::Attack;
 		m_Entities.push_back(hostileEntity);
 	}
 	void Game::SpawnFriendlyAt(int x, int y)
@@ -261,7 +261,7 @@ namespace NecroCore
 					}
 					break;
 				}
-				case EntityState::AttackHostiles:
+				case EntityState::Attack:
 				{
 					Entity* closestHostile = nullptr;
 					int bestDistance = std::numeric_limits<int>::max();
@@ -285,12 +285,16 @@ namespace NecroCore
 					if (Entity::IsAdjacent(entity.x, entity.y, closestHostile->x, closestHostile->y))
 					{
 						closestHostile->hp -= entity.attackDamage;
-						appendSeparator();
-						oss << "Your summoned ally strikes at a foe.";
 
 						if (closestHostile->hp <= 0)
 						{
 							closestHostile->hp = 0;
+							appendSeparator();
+							oss << "Your summoned ally's foe crumbles into dust.";
+						}
+						else {
+							appendSeparator();
+							oss << "Your summoned ally strikes at a foe.";
 						}
 					}
 					else
@@ -311,15 +315,22 @@ namespace NecroCore
 					}
 					break;
 				}
-				case EntityState::AttackPlayer:
-				{
-					break;
-				}
 				default:
 					break;
 			}
 		}
 		std::cout << "[ProcessSummonedTurn] Final description: " << oss.str() << "\n";
+
+		m_Entities.erase(
+			std::remove_if(
+				m_Entities.begin(),
+				m_Entities.end(),
+				[](const Entity& e)
+				{
+					return e.faction == Faction::Hostile && e.hp <= 0;
+				}),
+			m_Entities.end()
+		);
 
 		result.description = oss.str();
 	}
@@ -354,12 +365,70 @@ namespace NecroCore
 
 			switch (entity.aiState)
 			{
-				case EntityState::AttackPlayer:
-				case EntityState::FollowPlayer:
+				case EntityState::Attack:
 				{
-					const bool adjacent = Entity::IsAdjacent(entity.x, entity.y, m_Player.x, m_Player.y);
+					const int distanceToPlayer = std::abs(entity.x - m_Player.x) + std::abs(entity.y - m_Player.y);
+					const int distanceToClosestSummoned = [&]() {
+						int bestDistance = std::numeric_limits<int>::max();
+						for (const Entity& other : m_Entities)
+						{
+							if (other.faction != Faction::Friendly || other.hp <= 0)
+								continue;
+							const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
+							if (dist < bestDistance)
+							{
+								bestDistance = dist;
+							}
+						}
+						return bestDistance;
+						}();
+					int targetX = m_Player.x;
+					int targetY = m_Player.y;
+					Entity* targetEntity = nullptr;
 
-					if (adjacent && !playerDiedThisTurn)
+					if (distanceToClosestSummoned < distanceToPlayer)
+					{
+						int bestDistance = std::numeric_limits<int>::max();
+						for (Entity& other : m_Entities)
+						{
+							if (other.faction != Faction::Friendly || other.hp <= 0)
+								continue;
+							const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
+							if (dist < bestDistance)
+							{
+								bestDistance = dist;
+								targetEntity = &other;
+							}
+						}
+
+						if (targetEntity)
+						{
+							targetX = targetEntity->x;
+							targetY = targetEntity->y;
+						}
+					}
+
+					const bool adjacentToPlayer = Entity::IsAdjacent(entity.x, entity.y, m_Player.x, m_Player.y);
+					const bool adjacentToSummoned = targetEntity &&
+						Entity::IsAdjacent(entity.x, entity.y, targetEntity->x, targetEntity->y);
+
+					if (adjacentToSummoned && targetEntity)
+					{
+						anyHostileActed = true;
+
+						targetEntity->hp -= entity.attackDamage;
+						if (targetEntity->hp < 0) {
+							targetEntity->hp = 0;
+							appendSeparator();
+							oss << "A hostile slays your summoned ally.";
+						}
+						else {
+							appendSeparator();
+							oss << "A hostile lashes out at your summoned ally.";
+						}
+						break;
+					}
+					else if (adjacentToPlayer && !playerDiedThisTurn)
 					{
 						anyHostileActed = true;
 
@@ -380,16 +449,15 @@ namespace NecroCore
 						oss << "A hostile claws at you from the " << direction << ".";
 						break;
 					}
-
 					int dx = 0, dy = 0;
-					Entity::ComputeStepTowards(entity.x, entity.y, m_Player.x, m_Player.y, dx, dy);
-					const int targetX = entity.x + dx;
-					const int targetY = entity.y + dy;
+					Entity::ComputeStepTowards(entity.x, entity.y, targetX, targetY, dx, dy);
+					const int targetMoveX = entity.x + dx;
+					const int targetMoveY = entity.y + dy;
 
-					if (m_Map.IsWalkable(targetX, targetY) && !playerDiedThisTurn)
+					if (m_Map.IsWalkable(targetMoveX, targetMoveY) && !playerDiedThisTurn)
 					{
-						entity.x = targetX;
-						entity.y = targetY;
+						entity.x = targetMoveX;
+						entity.y = targetMoveY;
 						anyHostileActed = true;
 
 						appendSeparator();
@@ -402,10 +470,9 @@ namespace NecroCore
 					}
 					break;
 				}
-
+				case EntityState::FollowPlayer:
 				case EntityState::Idle:
 				case EntityState::Guard:
-				case EntityState::AttackHostiles:
 			default:
 				// Not used for hostiles yet
 				break;
@@ -415,9 +482,20 @@ namespace NecroCore
 		// TODO - Random chance for ambient events if no hostiles acted
 		if (!anyHostileActed && !playerDiedThisTurn)
 		{
-			appendSeparator();
-			oss << "The world waits in uneasy silence.";
+			//	appendSeparator();
+			//	oss << "The world waits in uneasy silence.";
 		}
+
+		m_Entities.erase(
+			std::remove_if(
+				m_Entities.begin(),
+				m_Entities.end(),
+				[](const Entity& e)
+				{
+					return e.faction == Faction::Friendly && e.hp <= 0;
+				}),
+			m_Entities.end()
+		);
 
 		// TODO - Random death message variations
 		if (playerDiedThisTurn)
