@@ -127,5 +127,5 @@ TEST(SummonCommandTest, SummonCommandNoSummonsResult)
 	Game game("Ares");
 	auto turnCommand = game.ApplyTurn("command all attack");
 	EXPECT_FALSE(turnCommand.success);
-	EXPECT_NE(std::string::npos, turnCommand.description.find("No summons!"));
+	EXPECT_NE(std::string::npos, turnCommand.description.find("You have no minions to command."));
 }

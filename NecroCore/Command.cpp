@@ -100,6 +100,23 @@ namespace NecroCore
 		{
 			result.action = CommandAction::SummonCommand;
 
+			bool hasFriendlyMinion = false;
+			for (const Entity& friendlyEntity : m_Entities)
+			{
+				if (friendlyEntity.faction == Faction::Friendly)
+				{
+					hasFriendlyMinion = true;
+					break;
+				}
+			}
+
+			if (!hasFriendlyMinion)
+			{
+				result.description = "You have no minions to command.";
+				result.success = false;
+				return result;
+			}
+
 			std::string target;
 			std::string order;
 			if (!(iss >> target >> order))
