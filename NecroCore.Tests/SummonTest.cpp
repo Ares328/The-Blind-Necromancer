@@ -85,3 +85,13 @@ TEST(SummonTest, SummonedEntityHasCorrectFaction)
 	SummonResult res = std::get<SummonResult>(command.payload);
 	EXPECT_EQ(res.summonedEntity.faction, Faction::Friendly);
 }
+TEST(SummonTest, SummonedEntityDiesAfterAttack)
+{
+	Game game("Ares");
+	const Player& player = game.GetPlayer();
+	game.SpawnHostileWithStatsForTest(player.x + 2, player.y + 1, 2, 1);
+	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1);
+	auto command = game.ApplyTurn("command all guard");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("A hostile slays your summoned ally."));
+}

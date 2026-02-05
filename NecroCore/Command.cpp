@@ -114,6 +114,12 @@ namespace NecroCore
 			result.description = "Command parsed.";
 			result.success = true;
 		}
+		else if (verb == "wait")
+		{
+			result.action = CommandAction::Unknown;
+			result.description = "You wait for a moment.";
+			result.success = true;
+		}
 		else
 		{
 			result.action = CommandAction::Unknown;
@@ -346,6 +352,9 @@ namespace NecroCore
 				break;
 			}
 			case CommandAction::Unknown:
+			{
+				break;
+			}
 			default:
 				finalResult.description = "You watch as nothing happens.";
 				finalResult.success = false;

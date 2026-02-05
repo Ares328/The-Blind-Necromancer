@@ -122,3 +122,10 @@ TEST(SummonCommandTest, SummonAttacksWhenSpawned)
 	EXPECT_TRUE(turnCommand.success);
 	EXPECT_NE(std::string::npos, turnCommand.description.find("Your summoned ally strikes at a foe."));
 }
+TEST(SummonCommandTest, SummonCommandNoSummonsResult)
+{
+	Game game("Ares");
+	auto turnCommand = game.ApplyTurn("command all attack");
+	EXPECT_FALSE(turnCommand.success);
+	EXPECT_NE(std::string::npos, turnCommand.description.find("No summons!"));
+}

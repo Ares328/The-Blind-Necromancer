@@ -129,6 +129,21 @@ namespace NecroCore
 		hostileEntity.aiState = EntityState::Attack;
 		m_Entities.push_back(hostileEntity);
 	}
+	void Game::SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage)
+	{
+		if (!m_Map.IsWalkable(x, y)) return;
+		Entity friendlyEntity;
+		friendlyEntity.id = m_NextEntityId++;
+		friendlyEntity.faction = Faction::Friendly;
+		friendlyEntity.x = x;
+		friendlyEntity.y = y;
+		friendlyEntity.aggroRange = 5;
+		friendlyEntity.hp = hp;
+		friendlyEntity.maxHp = hp;
+		friendlyEntity.attackDamage = attackDamage;
+		friendlyEntity.aiState = EntityState::FollowPlayer;
+		m_Entities.push_back(friendlyEntity);
+	}
 	void Game::SpawnFriendlyAt(int x, int y)
 	{
 		if (!m_Map.IsWalkable(x, y)) return;
@@ -417,7 +432,7 @@ namespace NecroCore
 						anyHostileActed = true;
 
 						targetEntity->hp -= entity.attackDamage;
-						if (targetEntity->hp < 0) {
+						if (targetEntity->hp <= 0) {
 							targetEntity->hp = 0;
 							appendSeparator();
 							oss << "A hostile slays your summoned ally.";

@@ -34,6 +34,7 @@ namespace NecroCore
 		void SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage);
 		void SpawnFriendly();
 		void SpawnFriendlyAt(int x, int y);
+		void SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage);
 
 		const Player& GetPlayer() const;
 		MoveResult MovePlayer(int dx, int dy);
