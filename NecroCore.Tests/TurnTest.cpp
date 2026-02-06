@@ -173,3 +173,23 @@ TEST(TurnTest, ApplyTurnHostileFromSouthWest)
 	EXPECT_NE(std::string::npos, command.description.find("You move north."));
 	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the south-west."));
 }
+TEST(TurnTest, ApplyTurnHostileWontAttackOutAggroRange)
+{
+	Game game("Ares");
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 4, map.spawnY + 2);
+	CommandResult command = game.ApplyTurn("move north");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You move north."));
+	EXPECT_EQ(std::string::npos, command.description.find("hostile"));
+}
+TEST(TurnTest, ApplyTurnHostileWillAttackEnteringAggroRange)
+{
+	Game game("Ares");
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 2, map.spawnY + 2);
+	CommandResult command = game.ApplyTurn("move south");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You move south."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the south-east."));
+}

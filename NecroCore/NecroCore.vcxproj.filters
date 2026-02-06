@@ -34,6 +34,12 @@
     <Filter Include="Source Files\Units">
       <UniqueIdentifier>{d75be625-efb3-43f1-8cf9-c7eef6d6e371}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Pathing">
+      <UniqueIdentifier>{3fca6be9-c01a-41e3-961b-dd9f09781a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pathing">
+      <UniqueIdentifier>{5c323a15-9900-4117-bab7-41788924ca2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -47,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="Pathfinding.cpp">
+      <Filter>Source Files\Pathing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="SummonCommandResult.h">
       <Filter>Header Files\Command\Results</Filter>
+    </ClInclude>
+    <ClInclude Include="Pathfinding.h">
+      <Filter>Header Files\Pathing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,11 +4,22 @@
 
 using namespace NecroCore;
 
+// Map for SummonCommand tests:
+	//  -- o is player start --
+	//	  "###############",
+	//	  "#.............#",
+	//	  "#.............#",
+	//	  "#......o.~....#",
+	//	  "#.........!...#",
+	//	  "#.............#",
+	//	  "###############",
+
+
 TEST(SummonCommandTest, SummonedEntityMovesTowardHostile)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileAt(player.x + 3, player.y + 1);
+	game.SpawnHostileWithStatsForTest(player.x + 3, player.y + 1, 2, 1);
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);

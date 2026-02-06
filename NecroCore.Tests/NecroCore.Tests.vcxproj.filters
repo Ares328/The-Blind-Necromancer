@@ -23,6 +23,9 @@
     <ClCompile Include="SummonCommandTest.cpp">
       <Filter>Command</Filter>
     </ClCompile>
+    <ClCompile Include="PathfindingTest.cpp">
+      <Filter>Pathing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -33,6 +36,9 @@
     </Filter>
     <Filter Include="Units">
       <UniqueIdentifier>{b7981d41-9407-43e2-8d38-506a87c4246d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pathing">
+      <UniqueIdentifier>{9dfac0ce-d655-40e8-bd9e-3260257276d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

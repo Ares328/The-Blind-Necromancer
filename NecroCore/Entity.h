@@ -31,19 +31,10 @@ namespace NecroCore
 
 		static bool IsAdjacent(int x1, int y1, int x2, int y2)
 		{
-			return (std::abs(x1 - x2) + std::abs(y1 - y2)) == 1;
-		}
+			const int dx = std::abs(x1 - x2);
+			const int dy = std::abs(y1 - y2);
 
-		static void ComputeStepTowards(int fromX, int fromY, int toX, int toY, int& outDx, int& outDy)
-		{
-			outDx = 0;
-			outDy = 0;
-
-			if (fromX < toX)      outDx = 1;
-			else if (fromX > toX) outDx = -1;
-
-			if (fromY < toY)      outDy = 1;
-			else if (fromY > toY) outDy = -1;
+			return (dx <= 1 && dy <= 1) && !(dx == 0 && dy == 0);
 		}
 
 		bool IsAdjacentTo(int otherX, int otherY) const

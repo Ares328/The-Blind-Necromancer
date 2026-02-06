@@ -2,6 +2,7 @@
 #include "PulseResult.h"
 #include "MoveResult.h"
 #include "SummonResult.h"
+#include "Pathfinding.h"
 
 #include <iostream>
 #include <sstream>
@@ -39,10 +40,12 @@ namespace NecroCore
 			<< ") to (" << newX << "," << newY << ")\n";
 
 		bool walkable = m_Map.IsWalkable(newX, newY);
+		bool free = IsTileFree(newX, newY);
 		std::cout << "[MovePlayer] IsWalkable(" << newX << "," << newY
-			<< ") = " << (walkable ? "true" : "false") << "\n";
+			<< ") = " << (walkable ? "true" : "false")
+			<< ", IsTileFree = " << (free ? "true" : "false") << "\n";
 
-		if (!walkable)
+		if (!walkable || !free)
 		{
 			MoveResult result;
 			result.oldX = oldX;
@@ -203,6 +206,22 @@ namespace NecroCore
 			spawnX = 7;
 			spawnY = 3;
 		}
+		else if (mapName == "path_test")
+		{
+
+			map = {
+				"#######",
+				"#.....#",
+				"#.###.#",
+				"#.#.#.#",
+				"#.###.#",
+				"#.....#",
+				"#######",
+			};
+
+			spawnX = 1;
+			spawnY = 1;
+		}
 		else if (mapName == "map1")
 		{
 
@@ -242,7 +261,19 @@ namespace NecroCore
 		m_Map.spawnY = spawnY;
 		m_Player.x = spawnX;
 		m_Player.y = spawnY;
+	}
+	bool Game::IsTileFree(int x, int y) const
+	{
+		if (m_Player.x == x && m_Player.y == y && m_Player.hp > 0)
+			return false;
 
+		for (const Entity& e : m_Entities)
+		{
+			if (e.hp <= 0) continue;
+			if (e.x == x && e.y == y)
+				return false;
+		}
+		return true;
 	}
 	std::string Game::DescribeNearbyDoors(int radius) const
 	{
@@ -319,11 +350,20 @@ namespace NecroCore
 				{
 					int dx = 0;
 					int dy = 0;
-					Entity::ComputeStepTowards(entity.x, entity.y, m_Player.x, m_Player.y, dx, dy);
+					const bool found = Pathfinder::FindFirstStepTowards(
+						m_Map,
+						entity.x, entity.y,
+						m_Player.x, m_Player.y,
+						dx, dy);
+
+					if (!found)
+					{
+						break;
+					}
 					const int targetX = entity.x + dx;
 					const int targetY = entity.y + dy;
 
-					if (m_Map.IsWalkable(targetX, targetY))
+					if (m_Map.IsWalkable(targetX, targetY) && IsTileFree(targetX, targetY))
 					{
 						entity.x = targetX;
 						entity.y = targetY;
@@ -338,11 +378,19 @@ namespace NecroCore
 					{
 						int dx = 0;
 						int dy = 0;
-						Entity::ComputeStepTowards(entity.x, entity.y, entity.guardX, entity.guardY, dx, dy);
+						const bool found = Pathfinder::FindFirstStepTowards(
+							m_Map,
+							entity.x, entity.y,
+							entity.guardX, entity.guardY,
+							dx, dy);
+
+						if (!found)
+							break;
+
 						const int targetX = entity.x + dx;
 						const int targetY = entity.y + dy;
 
-						if (m_Map.IsWalkable(targetX, targetY))
+						if (m_Map.IsWalkable(targetX, targetY) && IsTileFree(targetX, targetY))
 						{
 							entity.x = targetX;
 							entity.y = targetY;
@@ -350,60 +398,15 @@ namespace NecroCore
 							oss << "Your summoned ally returns to its post.";
 						}
 					}
+					else
+					{
+						HandleSummonedAttackAI(entity, oss, appendSeparator);
+					}
 					break;
 				}
 				case EntityState::Attack:
 				{
-					Entity* closestHostile = nullptr;
-					int bestDistance = std::numeric_limits<int>::max();
-
-					for (Entity& other : m_Entities)
-					{
-						if (other.faction != Faction::Hostile || other.hp <= 0)
-							continue;
-
-						const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
-						if (dist < bestDistance)
-						{
-							bestDistance = dist;
-							closestHostile = &other;
-						}
-					}
-
-					if (!closestHostile)
-						break;
-
-					if (Entity::IsAdjacent(entity.x, entity.y, closestHostile->x, closestHostile->y))
-					{
-						closestHostile->hp -= entity.attackDamage;
-
-						if (closestHostile->hp <= 0)
-						{
-							closestHostile->hp = 0;
-							appendSeparator();
-							oss << "Your summoned ally's foe crumbles into dust.";
-						}
-						else {
-							appendSeparator();
-							oss << "Your summoned ally strikes at a foe.";
-						}
-					}
-					else
-					{
-						int dx = 0;
-						int dy = 0;
-						Entity::ComputeStepTowards(entity.x, entity.y, closestHostile->x, closestHostile->y, dx, dy);
-						const int targetX = entity.x + dx;
-						const int targetY = entity.y + dy;
-
-						if (m_Map.IsWalkable(targetX, targetY))
-						{
-							entity.x = targetX;
-							entity.y = targetY;
-							appendSeparator();
-							oss << "Your summoned ally stalks a distant foe.";
-						}
-					}
+					HandleSummonedAttackAI(entity, oss, appendSeparator);
 					break;
 				}
 				default:
@@ -458,111 +461,7 @@ namespace NecroCore
 			{
 				case EntityState::Attack:
 				{
-					const int distanceToPlayer = std::abs(entity.x - m_Player.x) + std::abs(entity.y - m_Player.y);
-					const int distanceToClosestSummoned = [&]() {
-						int bestDistance = std::numeric_limits<int>::max();
-						for (const Entity& other : m_Entities)
-						{
-							if (other.faction != Faction::Friendly || other.hp <= 0)
-								continue;
-							const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
-							if (dist < bestDistance)
-							{
-								bestDistance = dist;
-							}
-						}
-						return bestDistance;
-						}();
-					int targetX = m_Player.x;
-					int targetY = m_Player.y;
-					Entity* targetEntity = nullptr;
-
-					if (distanceToClosestSummoned < distanceToPlayer)
-					{
-						int bestDistance = std::numeric_limits<int>::max();
-						for (Entity& other : m_Entities)
-						{
-							if (other.faction != Faction::Friendly || other.hp <= 0)
-								continue;
-							const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
-							if (dist < bestDistance)
-							{
-								bestDistance = dist;
-								targetEntity = &other;
-							}
-						}
-
-						if (targetEntity)
-						{
-							targetX = targetEntity->x;
-							targetY = targetEntity->y;
-						}
-					}
-
-					const bool adjacentToPlayer = Entity::IsAdjacent(entity.x, entity.y, m_Player.x, m_Player.y);
-					const bool adjacentToSummoned = targetEntity &&
-						Entity::IsAdjacent(entity.x, entity.y, targetEntity->x, targetEntity->y);
-
-					if (adjacentToSummoned && targetEntity)
-					{
-						anyHostileActed = true;
-
-						targetEntity->hp -= entity.attackDamage;
-						if (targetEntity->hp <= 0) {
-							targetEntity->hp = 0;
-							appendSeparator();
-							oss << "A hostile slays your summoned ally.";
-						}
-						else {
-							appendSeparator();
-							oss << "A hostile lashes out at your summoned ally.";
-						}
-						break;
-					}
-					else if (adjacentToPlayer && !playerDiedThisTurn)
-					{
-						anyHostileActed = true;
-
-						if (m_Player.hp > 0)
-						{
-							m_Player.hp -= entity.attackDamage;
-							if (m_Player.hp < 0) m_Player.hp = 0;
-							if (m_Player.hp == 0) playerDiedThisTurn = true;
-						}
-
-						std::string direction;
-
-						const char* dirName = Map::DirectionNameFromPoints(m_Player.x, m_Player.y, entity.x, entity.y);
-						if (dirName)
-						{
-							direction = dirName;
-						}
-
-						appendSeparator();
-						oss << "A hostile claws at you from the " << direction << ".";
-						break;
-					}
-					int dx = 0, dy = 0;
-					Entity::ComputeStepTowards(entity.x, entity.y, targetX, targetY, dx, dy);
-					const int targetMoveX = entity.x + dx;
-					const int targetMoveY = entity.y + dy;
-
-					if (m_Map.IsWalkable(targetMoveX, targetMoveY) && !playerDiedThisTurn)
-					{
-						appendSeparator();
-						oss << "A hostile shuffles closer from the ";
-						std::string direction;
-						const char* dirName = Map::DirectionNameFromPoints(m_Player.x, m_Player.y, entity.x, entity.y);
-						if (dirName)
-						{
-							oss << dirName;
-						}
-						oss << ".";
-
-						entity.x = targetMoveX;
-						entity.y = targetMoveY;
-						anyHostileActed = true;
-					}
+					HandleHostileAttackAI(entity, oss, anyHostileActed, playerDiedThisTurn, appendSeparator);
 					break;
 				}
 				case EntityState::FollowPlayer:
@@ -603,5 +502,201 @@ namespace NecroCore
 		std::cout << "[ProcessHostileTurn] Final description: " << oss.str() << "\n";
 
 		result.description = oss.str();
+	}
+
+	bool Game::HandleHostileAttackAI(Entity& entity, std::ostringstream& oss, bool& anyHostileActed, bool& playerDiedThisTurn, std::function<void()> appendSeparator)
+	{
+		const int distanceToPlayer = std::abs(entity.x - m_Player.x) + std::abs(entity.y - m_Player.y);
+		const int distanceToClosestSummoned = [&]() {
+			int bestDistance = std::numeric_limits<int>::max();
+			for (const Entity& other : m_Entities)
+			{
+				if (other.faction != Faction::Friendly || other.hp <= 0)
+					continue;
+				const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
+				if (dist < bestDistance)
+				{
+					bestDistance = dist;
+				}
+			}
+
+			return bestDistance;
+			}();
+		int targetX = m_Player.x;
+		int targetY = m_Player.y;
+		Entity* targetEntity = nullptr;
+
+		if (distanceToPlayer > entity.aggroRange && distanceToClosestSummoned > entity.aggroRange)
+		{
+			return false;
+		}
+
+		if (distanceToClosestSummoned < distanceToPlayer)
+		{
+			int bestDistance = std::numeric_limits<int>::max();
+			for (Entity& other : m_Entities)
+			{
+				if (other.faction != Faction::Friendly || other.hp <= 0)
+					continue;
+				const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
+				if (dist < bestDistance)
+				{
+					bestDistance = dist;
+					targetEntity = &other;
+				}
+			}
+
+			if (targetEntity)
+			{
+				targetX = targetEntity->x;
+				targetY = targetEntity->y;
+			}
+		}
+
+		const bool adjacentToPlayer = Entity::IsAdjacent(entity.x, entity.y, m_Player.x, m_Player.y);
+		const bool adjacentToSummoned = targetEntity &&
+			Entity::IsAdjacent(entity.x, entity.y, targetEntity->x, targetEntity->y);
+
+		if (adjacentToSummoned && targetEntity)
+		{
+			anyHostileActed = true;
+
+			targetEntity->hp -= entity.attackDamage;
+			if (targetEntity->hp <= 0) {
+				targetEntity->hp = 0;
+				appendSeparator();
+				oss << "A hostile slays your summoned ally.";
+			}
+			else {
+				appendSeparator();
+				oss << "A hostile lashes out at your summoned ally.";
+			}
+			return true;
+		}
+		else if (adjacentToPlayer && !playerDiedThisTurn)
+		{
+			anyHostileActed = true;
+
+			if (m_Player.hp > 0)
+			{
+				m_Player.hp -= entity.attackDamage;
+				if (m_Player.hp < 0) m_Player.hp = 0;
+				if (m_Player.hp == 0) playerDiedThisTurn = true;
+			}
+
+			std::string direction;
+
+			const char* dirName = Map::DirectionNameFromPoints(m_Player.x, m_Player.y, entity.x, entity.y);
+			if (dirName)
+			{
+				direction = dirName;
+			}
+
+			appendSeparator();
+			oss << "A hostile claws at you from the " << direction << ".";
+			return true;
+		}
+		int dx = 0, dy = 0;
+		const bool foundStep = Pathfinder::FindFirstStepTowards(
+			m_Map,
+			entity.x, entity.y,
+			targetX, targetY,
+			dx, dy);
+
+		if (!foundStep)
+			return false;
+		const int targetMoveX = entity.x + dx;
+		const int targetMoveY = entity.y + dy;
+
+		if (m_Map.IsWalkable(targetMoveX, targetMoveY) && IsTileFree(targetMoveX, targetMoveY) && !playerDiedThisTurn)
+		{
+			appendSeparator();
+			oss << "A hostile shuffles closer from the ";
+			std::string direction;
+			const char* dirName = Map::DirectionNameFromPoints(m_Player.x, m_Player.y, entity.x, entity.y);
+			if (dirName)
+			{
+				oss << dirName;
+			}
+			oss << ".";
+
+			entity.x = targetMoveX;
+			entity.y = targetMoveY;
+			anyHostileActed = true;
+			return true;
+		}
+		return false;
+	}
+
+	bool Game::HandleSummonedAttackAI(Entity& entity, std::ostringstream& oss, std::function<void()> appendSeparator)
+	{
+		Entity* closestHostile = nullptr;
+		int bestDistance = std::numeric_limits<int>::max();
+
+		for (Entity& other : m_Entities)
+		{
+			if (other.faction != Faction::Hostile || other.hp <= 0)
+				continue;
+
+			const int dist = std::abs(other.x - entity.x) + std::abs(other.y - entity.y);
+			if (dist < bestDistance)
+			{
+				bestDistance = dist;
+				closestHostile = &other;
+			}
+		}
+
+		if (!closestHostile || bestDistance > entity.aggroRange)
+		{
+			appendSeparator();
+			oss << "Your summoned ally has no targets.";
+			return false;
+		}
+
+		if (Entity::IsAdjacent(entity.x, entity.y, closestHostile->x, closestHostile->y))
+		{
+			closestHostile->hp -= entity.attackDamage;
+
+			if (closestHostile->hp <= 0)
+			{
+				closestHostile->hp = 0;
+				appendSeparator();
+				oss << "Your summoned ally's foe crumbles into dust.";
+			}
+			else
+			{
+				appendSeparator();
+				oss << "Your summoned ally strikes at a foe.";
+			}
+			return true;
+		}
+
+		int dx = 0;
+		int dy = 0;
+		const bool foundStep = Pathfinder::FindFirstStepTowards(
+			m_Map,
+			entity.x, entity.y,
+			closestHostile->x, closestHostile->y,
+			dx, dy);
+
+		if (!foundStep)
+			return false;
+
+		const int targetX = entity.x + dx;
+		const int targetY = entity.y + dy;
+
+		if (m_Map.IsWalkable(targetX, targetY) && IsTileFree(targetX, targetY))
+		{
+			entity.x = targetX;
+			entity.y = targetY;
+			appendSeparator();
+			oss << "Your summoned ally stalks a distant foe.";
+			std::cout << "[ProcessSummonedTurn] Summoned ally " << entity.id << " moves to ("
+				<< entity.x << "," << entity.y << ") while targeting hostile "
+				<< closestHostile->id << " at (" << closestHostile->x << "," << closestHostile->y << ")\n";
+			return true;
+		}
+
+		return false;
 	}
 }
