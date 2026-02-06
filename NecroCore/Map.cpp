@@ -30,6 +30,12 @@ namespace NecroCore
 		}
 	}
 
+	bool Map::IsDoor(int x, int y) const
+	{
+		TileType tile = GetTile(x, y);
+		return tile == TileType::Door;
+	}
+
 	void Map::LoadFromAscii(const std::vector<std::string>& lines)
 	{
 		m_Height = static_cast<int>(lines.size());
@@ -59,5 +65,38 @@ namespace NecroCore
 				m_Tiles.push_back(t);
 			}
 		}
+	}
+
+	void Map::convertTile(int x, int y, TileType newType)
+	{
+		if (x < 0 || y < 0 || x >= m_Width || y >= m_Height)
+		{
+			return;
+		}
+		m_Tiles[static_cast<std::size_t>(y) * m_Width + x] = newType;
+	}
+
+	const char* Map::DirectionNameFromDelta(int dx, int dy)
+	{
+		if (dx > 0) dx = 1;
+		else if (dx < 0) dx = -1;
+		if (dy > 0) dy = 1;
+		else if (dy < 0) dy = -1;
+
+		for (const auto& dir : dirs)
+		{
+			if (dir.dx == dx && dir.dy == dy)
+			{
+				return dir.name;
+			}
+		}
+		return nullptr;
+	}
+
+	const char* Map::DirectionNameFromPoints(int fromX, int fromY, int toX, int toY)
+	{
+		const int dx = toX - fromX;
+		const int dy = toY - fromY;
+		return DirectionNameFromDelta(dx, dy);
 	}
 }

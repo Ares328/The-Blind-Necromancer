@@ -37,6 +37,8 @@ namespace NecroCore
 		void SpawnFriendlyAt(int x, int y);
 		void SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage);
 
+		void SpawnDoorAt(int x, int y);
+
 		const Player& GetPlayer() const;
 		MoveResult MovePlayer(int dx, int dy);
 
@@ -54,6 +56,8 @@ namespace NecroCore
 		Map m_Map;
 
 		void InitializeMap(const std::string& mapName);
+
+		std::string DescribeNearbyDoors(int radius) const;
 
 		void ProcessSummonedTurn(CommandResult& result);
 		void ProcessHostileTurn(CommandResult& result);

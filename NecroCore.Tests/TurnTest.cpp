@@ -39,7 +39,7 @@ TEST(TurnTest, ApplyTurnPlayerPulseWithHostiles)
 {
 	Game game("Ares");
 	Map map = game.GetMap();
-	game.SpawnHostileAt(map.spawnX + 3, map.spawnY + 1);
+	game.SpawnHostileAt(map.spawnX + 3, map.spawnY);
 	CommandResult command = game.ApplyTurn("pulse 5");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("Your senses extend outward."));
@@ -131,4 +131,45 @@ TEST(TurnTest, ApplyTurnHostileCanKillPlayerAndSetGameOver)
 	EXPECT_EQ(playerAfter.hp, 0);
 	EXPECT_TRUE(command.gameOver);
 	EXPECT_NE(std::string::npos, command.description.find("You collapse"));
+}
+
+TEST(TurnTest, ApplyTurnHostileFromNorthEast)
+{
+	Game game("Ares");
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 1, map.spawnY - 1);
+	CommandResult command = game.ApplyTurn("move south");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You move south."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the north-east."));
+}
+TEST(TurnTest, ApplyTurnHostileFromNorthWest)
+{
+	Game game("Ares");
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX - 1, map.spawnY - 1);
+	CommandResult command = game.ApplyTurn("move south");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You move south."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the north-west."));
+}
+TEST(TurnTest, ApplyTurnHostileFromSouthEast)
+{
+	Game game("Ares");
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 1, map.spawnY + 1);
+	CommandResult command = game.ApplyTurn("move north");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You move north."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the south-east."));
+}
+TEST(TurnTest, ApplyTurnHostileFromSouthWest)
+{
+	Game game("Ares");
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX - 1, map.spawnY + 1);
+	CommandResult command = game.ApplyTurn("move north");
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You move north."));
+	EXPECT_NE(std::string::npos, command.description.find("A hostile shuffles closer from the south-west."));
 }

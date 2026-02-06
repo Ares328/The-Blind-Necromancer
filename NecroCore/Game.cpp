@@ -200,7 +200,7 @@ namespace NecroCore
 				"#.............#",
 				"###############",
 			};
-			spawnX = 8;
+			spawnX = 7;
 			spawnY = 3;
 		}
 		else if (mapName == "map1")
@@ -228,8 +228,8 @@ namespace NecroCore
 				"################################",
 			};
 
-			spawnX = 15;
-			spawnY = 4;
+			spawnX = 3;
+			spawnY = 15;
 		}
 		else
 		{
@@ -243,6 +243,33 @@ namespace NecroCore
 		m_Player.x = spawnX;
 		m_Player.y = spawnY;
 
+	}
+	std::string Game::DescribeNearbyDoors(int radius) const
+	{
+		std::ostringstream oss;
+		bool first = true;
+
+		for (const auto& d : m_Map.dirs)
+		{
+			const int tx = m_Player.x + d.dx;
+			const int ty = m_Player.y + d.dy;
+			if (m_Map.IsDoor(tx, ty))
+			{
+				if (!first)
+				{
+					oss << " ";
+				}
+				first = false;
+				std::cout << "There is a door to the " << d.name << ".\n";
+				oss << "There is a door to the " << d.name << ".";
+			}
+		}
+
+		return oss.str();
+	}
+	void Game::SpawnDoorAt(int x, int y)
+	{
+		m_Map.convertTile(x, y, TileType::Door);
 	}
 	CommandResult Game::ApplyTurn(const std::string& command)
 	{
@@ -504,10 +531,12 @@ namespace NecroCore
 						}
 
 						std::string direction;
-						if (entity.x < m_Player.x) direction = "west";
-						else if (entity.x > m_Player.x) direction = "east";
-						else if (entity.y < m_Player.y) direction = "north";
-						else if (entity.y > m_Player.y) direction = "south";
+
+						const char* dirName = Map::DirectionNameFromPoints(m_Player.x, m_Player.y, entity.x, entity.y);
+						if (dirName)
+						{
+							direction = dirName;
+						}
 
 						appendSeparator();
 						oss << "A hostile claws at you from the " << direction << ".";
@@ -520,17 +549,19 @@ namespace NecroCore
 
 					if (m_Map.IsWalkable(targetMoveX, targetMoveY) && !playerDiedThisTurn)
 					{
+						appendSeparator();
+						oss << "A hostile shuffles closer from the ";
+						std::string direction;
+						const char* dirName = Map::DirectionNameFromPoints(m_Player.x, m_Player.y, entity.x, entity.y);
+						if (dirName)
+						{
+							oss << dirName;
+						}
+						oss << ".";
+
 						entity.x = targetMoveX;
 						entity.y = targetMoveY;
 						anyHostileActed = true;
-
-						appendSeparator();
-						oss << "A hostile shuffles closer from the ";
-						if (dx < 0)      oss << "east";
-						else if (dx > 0) oss << "west";
-						else if (dy < 0) oss << "south";
-						else if (dy > 0) oss << "north";
-						oss << ".";
 					}
 					break;
 				}

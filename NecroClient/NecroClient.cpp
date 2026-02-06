@@ -9,9 +9,7 @@ using namespace NecroCore;
 
 int main()
 {
-    Game game("WebPlayer");
-
-    game.SpawnHostileAt(1, 1);
+    Game game("Ares328", "map1");
 
     httplib::Server svr;
 
