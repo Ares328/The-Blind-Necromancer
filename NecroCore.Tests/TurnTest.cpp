@@ -18,7 +18,8 @@ TEST(TurnTest, ApplyTurnPlayerMoveNoHostiles)
 TEST(TurnTest, ApplyTurnPlayerMoveWithHostiles)
 {
 	Game game("Ares");
-	game.SpawnHostileAt(6, 3);
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX, map.spawnY + 1);
 	CommandResult command = game.ApplyTurn("move north");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("You move north."));
@@ -27,9 +28,8 @@ TEST(TurnTest, ApplyTurnPlayerMoveWithHostiles)
 TEST(TurnTest, ApplyTurnPlayerMoveHostileAdjacentAttacks)
 {
 	Game game("Ares");
-
-	game.SpawnHostileAt(7, 3);
-
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 1, map.spawnY + 1);
 	CommandResult command = game.ApplyTurn("move south");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("You move south."));
@@ -38,7 +38,8 @@ TEST(TurnTest, ApplyTurnPlayerMoveHostileAdjacentAttacks)
 TEST(TurnTest, ApplyTurnPlayerPulseWithHostiles)
 {
 	Game game("Ares");
-	game.SpawnHostileAt(7, 3);
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 3, map.spawnY + 1);
 	CommandResult command = game.ApplyTurn("pulse 5");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("Your senses extend outward."));
@@ -55,8 +56,9 @@ TEST(TurnTest, ApplyTurnPlayerPulseNoHostiles)
 TEST(TurnTest, ApplyTurnHostileFromNorth)
 {
 	Game game("Ares");
+	Map map = game.GetMap();
 
-	game.SpawnHostileAt(6, 1);
+	game.SpawnHostileAt(map.spawnX, map.spawnY - 1);
 
 	CommandResult command = game.ApplyTurn("move south");
 
@@ -67,7 +69,8 @@ TEST(TurnTest, ApplyTurnHostileFromNorth)
 TEST(TurnTest, ApplyTurnHostileFromSouth)
 {
 	Game game("Ares");
-	game.SpawnHostileAt(6, 3);
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX, map.spawnY + 1);
 	CommandResult command = game.ApplyTurn("move north");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("You move north."));
@@ -76,7 +79,8 @@ TEST(TurnTest, ApplyTurnHostileFromSouth)
 TEST(TurnTest, ApplyTurnHostileFromEast)
 {
 	Game game("Ares");
-	game.SpawnHostileAt(7, 2);
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX + 1, map.spawnY);
 	CommandResult command = game.ApplyTurn("move west");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("You move west."));
@@ -85,7 +89,8 @@ TEST(TurnTest, ApplyTurnHostileFromEast)
 TEST(TurnTest, ApplyTurnHostileFromWest)
 {
 	Game game("Ares");
-	game.SpawnHostileAt(5, 2);
+	Map map = game.GetMap();
+	game.SpawnHostileAt(map.spawnX - 1, map.spawnY);
 	CommandResult command = game.ApplyTurn("move east");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("You move east."));

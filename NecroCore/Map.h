@@ -27,6 +27,9 @@ namespace NecroCore
 
 		void LoadFromAscii(const std::vector<std::string>& lines);
 
+		int spawnX = 0;
+		int spawnY = 0;
+
 	private:
 		int m_Width = 0;
 		int m_Height = 0;

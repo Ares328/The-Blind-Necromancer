@@ -101,6 +101,7 @@ TEST(SummonCommandTest, SummonCommandReturnsFalseOnUnknownOrder)
 TEST(SummonCommandTest, SummonCommandReturnsCorrectArgs)
 {
 	Game game("Ares");
+	game.SpawnFriendlyWithStatsForTest(game.GetPlayer().x + 1, game.GetPlayer().y, 1, 1);
 	auto command = game.ApplyCommand("command all attack");
 	auto itTarget = command.args.find("target");
 	ASSERT_NE(itTarget, command.args.end());

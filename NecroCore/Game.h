@@ -15,6 +15,7 @@ namespace NecroCore
 	class Game
 	{
 	public:
+		Game(const std::string& playerName, const std::string& mapName);
 		Game(const std::string& playerName);
 
 		const std::string& GetPlayerName() const;
@@ -52,7 +53,7 @@ namespace NecroCore
 
 		Map m_Map;
 
-		void InitializeDefaultMap();
+		void InitializeMap(const std::string& mapName);
 
 		void ProcessSummonedTurn(CommandResult& result);
 		void ProcessHostileTurn(CommandResult& result);

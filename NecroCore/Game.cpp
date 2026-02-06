@@ -9,10 +9,14 @@
 
 namespace NecroCore 
 {
-	Game::Game(const std::string& playerName)
+	Game::Game(const std::string& playerName, const std::string& mapName)
 		: m_PlayerName(playerName)
 	{
-		InitializeDefaultMap();
+		InitializeMap(mapName);
+	}
+	Game::Game(const std::string& playerName)
+		: Game(playerName, "test_box")
+	{
 	}
 	const std::string& Game::GetPlayerName() const
 	{
@@ -179,21 +183,66 @@ namespace NecroCore
 
 		return result;
 	}
-	void Game::InitializeDefaultMap()
+	void Game::InitializeMap(const std::string& mapName)
 	{
-		// Player starts at (6,2)
-		std::vector<std::string> lines = {
-			"##########",
-			"#.........#",
-			"#.........#",
-			"#.........#",
-			"##########",
-		};
+		std::vector<std::string> map;
+		int spawnX = 0;
+		int spawnY = 0;
 
-		m_Map.LoadFromAscii(lines);
+		if (mapName == "test_box")
+		{
+			map = {
+				"###############",
+				"#.............#",
+				"#.............#",
+				"#.............#",
+				"#.............#",
+				"#.............#",
+				"###############",
+			};
+			spawnX = 8;
+			spawnY = 3;
+		}
+		else if (mapName == "map1")
+		{
 
-		m_Player.x = 6;
-		m_Player.y = 2;
+
+			map = {
+				"             #####   ",
+				"            #.....#  ",
+				"#####      #.......# ",
+				"#...#     #.........#",
+				"#...#######.........#",
+				"#.........+.........#",
+				"#...#######.........#   #############",
+				"#...#     #.........#   #......+....#",
+				"#...#######.........#   #......######",
+				"######..............#   #...........#",
+				"     #..............#   ######.######",
+				"#######+#####+#######        #.#",
+				"#.........#.........#        #.#",
+				"#.........#.........#        #.#",
+				"#+###.....#+####+####        #.#",
+				"#...#.....#....#....##########.#",
+				"#...#.....#....#....+..........#",
+				"################################",
+			};
+
+			spawnX = 15;
+			spawnY = 4;
+		}
+		else
+		{
+			std::cerr << "[InitializeMap] Unknown map: " << mapName << "\n";
+			std::exit(EXIT_FAILURE);
+		}
+
+		m_Map.LoadFromAscii(map);
+		m_Map.spawnX = spawnX;
+		m_Map.spawnY = spawnY;
+		m_Player.x = spawnX;
+		m_Player.y = spawnY;
+
 	}
 	CommandResult Game::ApplyTurn(const std::string& command)
 	{

@@ -36,21 +36,22 @@ TEST(MoveTest, MoveCommandReturnsFalseOnInvalidDirection)
 TEST(MoveTest, MoveCommandChangesPlayerPosition)
 {
 	Game game("Ares");
+	Map map = game.GetMap();
 	const Player& player = game.GetPlayer();
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 2);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY);
 	game.ApplyCommand("move north");
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 1);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY - 1);
 	game.ApplyCommand("move east");
-	EXPECT_EQ(player.x, 7);
-	EXPECT_EQ(player.y, 1);
+	EXPECT_EQ(player.x, map.spawnX + 1);
+	EXPECT_EQ(player.y, map.spawnY - 1);
 	game.ApplyCommand("move south");
-	EXPECT_EQ(player.x, 7);
-	EXPECT_EQ(player.y, 2);
+	EXPECT_EQ(player.x, map.spawnX + 1);
+	EXPECT_EQ(player.y, map.spawnY);
 	game.ApplyCommand("move west");
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 2);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY);
 }
 
 TEST(MoveTest, MoveCommandReturnsSameAsMovePlayer)
@@ -72,35 +73,41 @@ TEST(MoveTest, MoveCommandReturnsSameAsMovePlayer)
 TEST(MoveTest, PlayermovementBlockedAtWall)
 {
 	Game game("Ares");
+	Map map = game.GetMap();
 	const Player& player = game.GetPlayer();
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 2);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY);
 	game.ApplyCommand("move north");
 	game.ApplyCommand("move north");
 	game.ApplyCommand("move north");
 	game.ApplyCommand("move north");
 	game.ApplyCommand("move north");
 	game.ApplyCommand("move north");
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 1);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY - 2);
 }
 
 TEST(MoveTest, MoveCommandCorrectTillWall)
 {
 	Game game("Ares");
+	Map map = game.GetMap();
 	const Player& player = game.GetPlayer();
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 2);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY);
 	auto command1 = game.ApplyCommand("move north");
 	EXPECT_TRUE(command1.success);
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 1);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY - 1);
 	auto command2 = game.ApplyCommand("move north");
-	EXPECT_FALSE(command2.success);
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 1);
-	auto command3 = game.ApplyCommand("move south");
-	EXPECT_TRUE(command3.success);
-	EXPECT_EQ(player.x, 6);
-	EXPECT_EQ(player.y, 2);
+	EXPECT_TRUE(command2.success);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY - 2);
+	auto command3 = game.ApplyCommand("move north");
+	EXPECT_FALSE(command3.success);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY - 2);
+	auto command4 = game.ApplyCommand("move south");
+	EXPECT_TRUE(command4.success);
+	EXPECT_EQ(player.x, map.spawnX);
+	EXPECT_EQ(player.y, map.spawnY - 1);
 }
