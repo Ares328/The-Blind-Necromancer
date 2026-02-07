@@ -6,5 +6,6 @@ namespace NecroCore
 	struct SummonResult
 	{
 		Entity summonedEntity;
+		std::string summonedDirection;
 	};
 }

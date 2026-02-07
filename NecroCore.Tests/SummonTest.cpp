@@ -18,7 +18,7 @@ TEST(SummonTest, SummonCommandReturnsDescription)
 	Game game("Ares");
 	auto command = game.ApplyCommand("summon skeleton");
 
-	EXPECT_EQ(command.description, "You summon a loyal servant from the shadows in front of you.");
+	EXPECT_EQ(command.description, "You summon a loyal servant from the shadows north of you.");
 }
 
 TEST(SummonTest, SummonCommandReturnsFalseOnMissingCreature)
@@ -74,7 +74,7 @@ TEST(SummonTest, SummonCommandPopulatesPayload)
 
 	const Player& player = game.GetPlayer();
 	EXPECT_EQ(res.summonedEntity.x, player.x);
-	EXPECT_EQ(res.summonedEntity.y, player.y + 1);
+	EXPECT_EQ(res.summonedEntity.y, player.y - 1);
 	EXPECT_GT(res.summonedEntity.id, 0);
 }
 TEST(SummonTest, SummonedEntityHasCorrectFaction)
@@ -84,6 +84,69 @@ TEST(SummonTest, SummonedEntityHasCorrectFaction)
 	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
 	SummonResult res = std::get<SummonResult>(command.payload);
 	EXPECT_EQ(res.summonedEntity.faction, Faction::Friendly);
+}
+TEST(SummonTest, SummonedEntitySpawnsNorthOfYou)
+{
+	Game game("Ares");
+	auto command = game.ApplyCommand("summon skeleton");
+	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
+	SummonResult res = std::get<SummonResult>(command.payload);
+	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows north of you."));
+}
+TEST(SummonTest, SummonedEntitySpawnsEastOfYouIfNorthBlocked)
+{
+	Game game("Ares");
+	Map& map = const_cast<Map&>(game.GetMap());
+	const Player& player = game.GetPlayer();
+	map.convertTile(player.x, player.y - 1, TileType::Wall);
+	map.convertTile(player.x + 1, player.y - 1, TileType::Wall);
+	map.convertTile(player.x - 1, player.y - 1, TileType::Wall);
+	auto command = game.ApplyCommand("summon skeleton");
+	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
+	SummonResult res = std::get<SummonResult>(command.payload);
+	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows east of you."));
+}
+TEST(SummonTest, SummonedEntitySpawnsEastOfYouIfNorthBlockedByHostile)
+{
+	Game game("Ares");
+	Map& map = const_cast<Map&>(game.GetMap());
+	const Player& player = game.GetPlayer();
+	game.SpawnHostileAt(player.x, player.y - 1);
+	map.convertTile(player.x + 1, player.y - 1, TileType::Wall);
+	map.convertTile(player.x - 1, player.y - 1, TileType::Wall);
+	auto command = game.ApplyCommand("summon skeleton");
+	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
+	SummonResult res = std::get<SummonResult>(command.payload);
+	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows east of you."));
+}
+TEST(SummonTest, SummonedEntitySpawnsNorthEastOfYouIfNorthIsBlockedBySummon)
+{
+	Game game("Ares");
+	Map& map = const_cast<Map&>(game.GetMap());
+	const Player& player = game.GetPlayer();
+	game.SpawnFriendlyAt(player.x, player.y - 1);
+	map.convertTile(player.x - 1, player.y - 1, TileType::Wall);
+	auto command = game.ApplyCommand("summon skeleton");
+	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
+	SummonResult res = std::get<SummonResult>(command.payload);
+	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows north-east of you."));
+}
+TEST(SummonTest, SummonedEntitySpawnFailOnAvailableTile)
+{
+	Game game("Ares");
+	Map& map = const_cast<Map&>(game.GetMap());
+	const Player& player = game.GetPlayer();
+	map.convertTile(player.x + 1, player.y, TileType::Wall);
+	map.convertTile(player.x + 1, player.y + 1, TileType::Wall);
+	map.convertTile(player.x, player.y + 1, TileType::Wall);
+	map.convertTile(player.x - 1, player.y + 1, TileType::Wall);
+	map.convertTile(player.x - 1, player.y, TileType::Wall);
+	map.convertTile(player.x - 1, player.y - 1, TileType::Wall);
+	map.convertTile(player.x, player.y - 1, TileType::Wall);
+	map.convertTile(player.x + 1, player.y - 1, TileType::Wall);
+	auto command = game.ApplyCommand("summon skeleton");
+	EXPECT_FALSE(command.success);
+	EXPECT_EQ(command.description, "Your power strains, no spirit can take form here.");
 }
 TEST(SummonTest, SummonedEntityDiesAfterAttack)
 {

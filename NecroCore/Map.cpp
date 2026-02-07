@@ -56,6 +56,7 @@ namespace NecroCore
 				case '#': t = TileType::Wall;  break;
 				case '.': t = TileType::Floor; break;
 				case '+': t = TileType::Door;  break;
+				case 'o': t = TileType::Floor; break;
 				case ' ':
 				default:
 					t = TileType::Empty;

@@ -43,7 +43,7 @@ namespace NecroCore
 		const Player& GetPlayer() const;
 		MoveResult MovePlayer(int dx, int dy);
 
-		SummonResult SummonFriendlyInFrontPlayer();
+		SummonResult SummonFriendlyNextToPlayer();
 
 		const Map& GetMap() const { return m_Map; }
 

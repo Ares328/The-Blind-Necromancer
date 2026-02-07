@@ -127,7 +127,7 @@ TEST(SummonCommandTest, SummonAttacksWhenSpawned)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 1, player.y + 1, 2, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 1, player.y - 1, 2, 1);
 	auto summonCommand = game.ApplyCommand("summon skeleton");
 	EXPECT_TRUE(summonCommand.success);
 	auto turnCommand = game.ApplyTurn("command all attack");

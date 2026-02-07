@@ -38,14 +38,14 @@ namespace NecroCore
 
 		struct Dir { int dx; int dy; const char* name; };
 		static constexpr Dir dirs[] = {
-			{  0, 1, "south" },
 			{  0,  -1, "north" },
+			{  1, -1, "north-east" },
+			{ -1, -1, "north-west" },
 			{ 1,  0, "east"  },
 			{  -1,  0, "west"  },
-			{  1, -1, "north-east" },
 			{  1,  1, "south-east" },
-			{ -1, -1, "north-west" },
 			{ -1,  1, "south-west" },
+			{  0, 1, "south" },
 		};
 
 	private:

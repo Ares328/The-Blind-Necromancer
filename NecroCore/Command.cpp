@@ -233,10 +233,18 @@ namespace NecroCore
 					break;
 				}
 
-				SummonResult summonResult = SummonFriendlyInFrontPlayer();
+				SummonResult summonResult = SummonFriendlyNextToPlayer();
+
+				if (summonResult.summonedEntity.id == 0)
+				{
+					finalResult.payload = {};
+					finalResult.description = "Your power strains, no spirit can take form here.";
+					finalResult.success = false;
+					break;
+				}
 
 				finalResult.payload = summonResult;
-				finalResult.description = "You summon a loyal servant from the shadows in front of you.";
+				finalResult.description = "You summon a loyal servant from the shadows " + summonResult.summonedDirection + " of you.";
 				finalResult.success = true;
 				break;
 			}

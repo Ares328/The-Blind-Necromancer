@@ -175,15 +175,59 @@ namespace NecroCore
 	{
 		SpawnFriendlyAt(m_Player.x, m_Player.y);
 	}
-	SummonResult Game::SummonFriendlyInFrontPlayer()
+	SummonResult Game::SummonFriendlyNextToPlayer()
 	{
-		SpawnFriendlyAt(m_Player.x, m_Player.y + 1);
+		SummonResult result{};
 
-		const Entity& e = m_Entities.back();
+		const int px = m_Player.x;
+		const int py = m_Player.y;
 
-		SummonResult result;
-		result.summonedEntity = e;
+		constexpr int frontIndex = 0;
 
+		auto trySummonAt = [&](int sx, int sy) -> bool
+		{
+			if (!m_Map.IsWalkable(sx, sy))
+				return false;
+			if (!IsTileFree(sx, sy))
+				return false;
+
+			Entity friendlyEntity;
+			friendlyEntity.id = m_NextEntityId++;
+			friendlyEntity.faction = Faction::Friendly;
+			friendlyEntity.x = sx;
+			friendlyEntity.y = sy;
+			friendlyEntity.aggroRange = 5;
+			friendlyEntity.aiState = EntityState::FollowPlayer;
+			friendlyEntity.hp = 5;
+			friendlyEntity.maxHp = 5;
+			friendlyEntity.attackDamage = 1;
+
+			m_Entities.push_back(friendlyEntity);
+			result.summonedEntity = friendlyEntity;
+			result.summonedDirection = Map::DirectionNameFromPoints(px, py, sx, sy);
+			return true;
+		};
+
+		const auto& d = Map::dirs[frontIndex];
+		const int sx = px + d.dx;
+		const int sy = py + d.dy;
+		if (trySummonAt(sx, sy))
+			return result;
+
+		for (std::size_t i = 0; i < std::size(Map::dirs); ++i)
+		{
+			if (static_cast<int>(i) == frontIndex)
+				continue;
+
+			const auto& d = Map::dirs[i];
+			const int sx = px + d.dx;
+			const int sy = py + d.dy;
+
+			if (trySummonAt(sx, sy))
+				return result;
+		}
+
+		result.summonedEntity.id = 0;
 		return result;
 	}
 	void Game::InitializeMap(const std::string& mapName)
@@ -229,17 +273,17 @@ namespace NecroCore
 			map = {
 				"             #####   ",
 				"            #.....#  ",
-				"#####      #.......# ",
+				"#####      #...o...# ",
 				"#...#     #.........#",
 				"#...#######.........#",
-				"#.........+.........#",
+				"#.o.......+.........#",
 				"#...#######.........#   #############",
 				"#...#     #.........#   #......+....#",
-				"#...#######.........#   #......######",
+				"#...#######....o....#   #......######",
 				"######..............#   #...........#",
 				"     #..............#   ######.######",
 				"#######+#####+#######        #.#",
-				"#.........#.........#        #.#",
+				"#........o#.........#        #.#",
 				"#.........#.........#        #.#",
 				"#+###.....#+####+####        #.#",
 				"#...#.....#....#....##########.#",
@@ -261,6 +305,18 @@ namespace NecroCore
 		m_Map.spawnY = spawnY;
 		m_Player.x = spawnX;
 		m_Player.y = spawnY;
+
+		for (int y = 0; y < static_cast<int>(map.size()); ++y)
+		{
+			const std::string& row = map[static_cast<std::size_t>(y)];
+			for (int x = 0; x < static_cast<int>(row.size()); ++x)
+			{
+				if (row[static_cast<std::size_t>(x)] == 'o')
+				{
+					SpawnHostileAt(x, y);
+				}
+			}
+		}
 	}
 	bool Game::IsTileFree(int x, int y) const
 	{
