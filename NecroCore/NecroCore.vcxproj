@@ -139,6 +139,8 @@
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EnvironmentSystem.cpp" />
+    <ClCompile Include="EnvironmentSystem.h" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Pathfinding.cpp" />

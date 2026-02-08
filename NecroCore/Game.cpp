@@ -3,6 +3,7 @@
 #include "MoveResult.h"
 #include "SummonResult.h"
 #include "Pathfinding.h"
+#include "EnvironmentSystem.h"
 
 #include <iostream>
 #include <sstream>
@@ -368,6 +369,9 @@ namespace NecroCore
 		}
 		ProcessSummonedTurn(playerResult);
 		ProcessHostileTurn(playerResult);
+
+		static EnvironmentSystem env;
+		env.ApplyTurn(*this, playerResult);
 
 		return playerResult;
 	}

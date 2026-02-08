@@ -26,6 +26,9 @@
     <ClCompile Include="PathfindingTest.cpp">
       <Filter>Pathing</Filter>
     </ClCompile>
+    <ClCompile Include="EnvironmentTest.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -39,6 +42,9 @@
     </Filter>
     <Filter Include="Pathing">
       <UniqueIdentifier>{9dfac0ce-d655-40e8-bd9e-3260257276d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{2755f015-d2b9-457d-85d5-937566bf601b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

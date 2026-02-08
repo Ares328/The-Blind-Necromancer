@@ -13,6 +13,30 @@ namespace NecroCore
 		Door,
 	};
 
+	enum class TileState : unsigned char
+	{
+		Normal = 0,
+		OnFire = 1 << 0,
+	};
+
+	inline TileState operator|(TileState a, TileState b)
+	{
+		return static_cast<TileState>(
+			static_cast<unsigned char>(a) | static_cast<unsigned char>(b));
+	}
+
+	inline TileState& operator|=(TileState& a, TileState b)
+	{
+		a = a | b;
+		return a;
+	}
+
+	inline bool HasState(TileState value, TileState flag)
+	{
+		return (static_cast<unsigned char>(value) &
+			static_cast<unsigned char>(flag)) != 0;
+	}
+
 	class Map
 	{
 	public:
@@ -22,6 +46,7 @@ namespace NecroCore
 		int GetHeight() const { return m_Height; }
 
 		TileType GetTile(int x, int y) const;
+		TileState GetTileState(int x, int y) const;
 
 		bool IsWalkable(int x, int y) const;
 		bool IsDoor(int x, int y) const;
@@ -48,9 +73,13 @@ namespace NecroCore
 			{  0, 1, "south" },
 		};
 
+		void SetOnFire(int x, int y, bool onFire);
+		bool IsOnFire(int x, int y) const;
+
 	private:
 		int m_Width = 0;
 		int m_Height = 0;
 		std::vector<TileType> m_Tiles;
+		std::vector<TileState> m_TileStates;
 	};
 }

@@ -46,6 +46,7 @@ namespace NecroCore
 		SummonResult SummonFriendlyNextToPlayer();
 
 		const Map& GetMap() const { return m_Map; }
+		const std::vector<Entity>& GetEntities() const { return m_Entities; }
 
 	private:
 		std::string m_PlayerName;
