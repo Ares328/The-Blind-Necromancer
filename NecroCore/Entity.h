@@ -15,6 +15,29 @@ namespace NecroCore
 		Attack
 	};
 
+	enum class EntityStatus {
+		Normal = 0,
+		OnFire = 1 << 0,
+	};
+
+	inline EntityStatus operator|(EntityStatus a, EntityStatus b)
+	{
+		return static_cast<EntityStatus>(
+			static_cast<unsigned char>(a) | static_cast<unsigned char>(b));
+	}
+
+	inline EntityStatus& operator|=(EntityStatus& a, EntityStatus b)
+	{
+		a = a | b;
+		return a;
+	}
+
+	inline bool HasStatus(EntityStatus value, EntityStatus flag)
+	{
+		return (static_cast<unsigned char>(value) &
+			static_cast<unsigned char>(flag)) != 0;
+	}
+
 	struct Entity {
 		Faction faction;
 		int id;
@@ -28,6 +51,8 @@ namespace NecroCore
 		EntityState aiState = EntityState::Idle;
 		int guardX = 0;
 		int guardY = 0;
+
+		EntityStatus status = EntityStatus::Normal;
 
 		static bool IsAdjacent(int x1, int y1, int x2, int y2)
 		{
