@@ -40,13 +40,18 @@ namespace NecroCore
 
 		void SpawnDoorAt(int x, int y);
 
-		const Player& GetPlayer() const;
 		MoveResult MovePlayer(int dx, int dy);
 
 		SummonResult SummonFriendlyNextToPlayer();
 
-		const Map& GetMap() const { return m_Map; }
 		const std::vector<Entity>& GetEntities() const { return m_Entities; }
+		std::vector<Entity>& GetEntities() { return m_Entities; }
+
+		const Player& GetPlayer() const { return m_Player; }
+		Player& GetPlayer() { return m_Player; }
+
+		const Map& GetMap() const { return m_Map; }
+		Map& GetMap() { return m_Map; }
 
 		bool IsTileFree(int x, int y) const;
 

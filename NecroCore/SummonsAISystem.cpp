@@ -29,9 +29,9 @@ namespace NecroCore
 				}
 			};
 
-		auto& m_Entities = const_cast<std::vector<Entity>&>(game.GetEntities());
-		Player& m_Player = const_cast<Player&>(game.GetPlayer());
-		Map& m_Map = const_cast<Map&>(game.GetMap());
+		auto& m_Entities = game.GetEntities();
+		Player& m_Player = game.GetPlayer();
+		Map& m_Map = game.GetMap();
 
 		for (Entity& entity : m_Entities)
 		{
@@ -133,9 +133,9 @@ namespace NecroCore
 		std::ostringstream& oss,
 		const std::function<void()>& appendSeparator)
 	{
-		std::vector<Entity>& m_Entities = const_cast<std::vector<Entity>&>(game.GetEntities());
-		Player& m_Player = const_cast<Player&>(game.GetPlayer());
-		const Map& m_Map = game.GetMap();
+		auto& m_Entities = game.GetEntities();
+		Player& m_Player = game.GetPlayer();
+		Map& m_Map = game.GetMap();
 
 		Entity* closestHostile = nullptr;
 		int bestDistance = std::numeric_limits<int>::max();
@@ -162,11 +162,10 @@ namespace NecroCore
 
 		if (Entity::IsAdjacent(entity.x, entity.y, closestHostile->x, closestHostile->y))
 		{
-			closestHostile->hp -= entity.attackDamage;
+			closestHostile->ApplyDamage(entity.attackDamage);
 
-			if (closestHostile->hp <= 0)
+			if (!closestHostile->IsAlive())
 			{
-				closestHostile->hp = 0;
 				appendSeparator();
 				oss << "Your summoned ally's foe crumbles into dust.";
 			}

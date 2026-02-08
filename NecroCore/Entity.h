@@ -68,5 +68,16 @@ namespace NecroCore
 		{
 			return IsAdjacent(x, y, otherX, otherY);
 		}
+
+		void ApplyDamage(int damage)
+		{
+			hp -= damage;
+			if (hp < 0) hp = 0;
+		}
+
+		bool IsAlive() const
+		{
+			return hp > 0;
+		}
 	};
 }

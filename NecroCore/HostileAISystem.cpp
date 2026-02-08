@@ -29,9 +29,9 @@ namespace NecroCore
 				}
 			};
 
-		auto& m_Entities = const_cast<std::vector<Entity>&>(game.GetEntities());
-		const Player& m_Player = game.GetPlayer();
-		const Map& m_Map = game.GetMap();
+		auto& m_Entities = game.GetEntities();
+		Player& m_Player = game.GetPlayer();
+		Map& m_Map = game.GetMap();
 
 		bool anyHostileActed = false;
 		bool playerDiedThisTurn = false;
@@ -91,9 +91,9 @@ namespace NecroCore
 	}
 	bool HostileAISystem::HandleHostileAttackAI(Game& game, Entity& entity, std::ostringstream& oss, bool& anyHostileActed, bool& playerDiedThisTurn, const std::function<void()>& appendSeparator)
 	{
-		const Map& m_Map = game.GetMap();
-		Player& m_Player = const_cast<Player&>(game.GetPlayer());
-		std::vector<Entity>& m_Entities = const_cast<std::vector<Entity>&>(game.GetEntities());
+		auto& m_Entities = game.GetEntities();
+		Player& m_Player = game.GetPlayer();
+		Map& m_Map = game.GetMap();
 
 
 		const int distanceToPlayer = std::abs(entity.x - m_Player.x) + std::abs(entity.y - m_Player.y);
@@ -167,11 +167,10 @@ namespace NecroCore
 		{
 			anyHostileActed = true;
 
-			if (m_Player.hp > 0)
+			if (m_Player.IsAlive())
 			{
-				m_Player.hp -= entity.attackDamage;
-				if (m_Player.hp < 0) m_Player.hp = 0;
-				if (m_Player.hp == 0) playerDiedThisTurn = true;
+				m_Player.ApplyDamage(entity.attackDamage);
+				if (!m_Player.IsAlive()) playerDiedThisTurn = true;
 			}
 
 			std::string direction;

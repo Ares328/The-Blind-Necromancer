@@ -26,10 +26,6 @@ namespace NecroCore
 	{
 		return m_PlayerName;
 	}
-	const Player& Game::GetPlayer() const
-	{
-		return m_Player;
-	}
 
 	MoveResult Game::MovePlayer(int dx, int dy)
 	{
@@ -48,22 +44,19 @@ namespace NecroCore
 			<< ") = " << (walkable ? "true" : "false")
 			<< ", IsTileFree = " << (free ? "true" : "false") << "\n";
 
+		MoveResult result{};
+		result.oldX = oldX;
+		result.oldY = oldY;
+
 		if (!walkable || !free)
 		{
-			MoveResult result;
-			result.oldX = oldX;
-			result.oldY = oldY;
 			result.newX = oldX;
 			result.newY = oldY;
 			return result;
 		}
 
-		m_Player.x = newX;
-		m_Player.y = newY;
+		m_Player.MoveTo(newX, newY);
 
-		MoveResult result;
-		result.oldX = oldX;
-		result.oldY = oldY;
 		result.newX = newX;
 		result.newY = newY;
 
