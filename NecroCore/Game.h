@@ -48,6 +48,8 @@ namespace NecroCore
 		const Map& GetMap() const { return m_Map; }
 		const std::vector<Entity>& GetEntities() const { return m_Entities; }
 
+		bool IsTileFree(int x, int y) const;
+
 	private:
 		std::string m_PlayerName;
 		Player m_Player;
@@ -59,14 +61,6 @@ namespace NecroCore
 
 		void InitializeMap(const std::string& mapName);
 
-		bool IsTileFree(int x, int y) const;
-
 		std::string DescribeNearbyDoors(int radius) const;
-
-		bool HandleHostileAttackAI(Entity& entity, std::ostringstream& oss, bool& anyHostileActed, bool& playerDiedThisTurn, std::function<void()> appendSeparator);
-		bool HandleSummonedAttackAI(Entity& entity, std::ostringstream& oss, std::function<void()> appendSeparator);
-
-		void ProcessSummonedTurn(CommandResult& result);
-		void ProcessHostileTurn(CommandResult& result);
 	};
 };

@@ -142,8 +142,12 @@
     <ClCompile Include="EnvironmentSystem.cpp" />
     <ClCompile Include="EnvironmentSystem.h" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HostileAISystem.cpp" />
+    <ClCompile Include="HostileAISystem.h" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
+    <ClCompile Include="SummonsAISystem.cpp" />
+    <ClCompile Include="SummonsAISystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AttackResult.h" />

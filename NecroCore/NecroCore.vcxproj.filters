@@ -40,10 +40,10 @@
     <Filter Include="Source Files\Pathing">
       <UniqueIdentifier>{5c323a15-9900-4117-bab7-41788924ca2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Environment">
+    <Filter Include="Header Files\Systems">
       <UniqueIdentifier>{bdd17cac-3e9d-4d7d-92fc-7a65162f39b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Environment">
+    <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{9cb9c28d-a263-441d-aa5a-7790b5de81b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -64,10 +64,22 @@
       <Filter>Source Files\Pathing</Filter>
     </ClCompile>
     <ClCompile Include="EnvironmentSystem.h">
-      <Filter>Header Files\Environment</Filter>
+      <Filter>Header Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="EnvironmentSystem.cpp">
-      <Filter>Source Files\Environment</Filter>
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="HostileAISystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="SummonsAISystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="HostileAISystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="SummonsAISystem.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
