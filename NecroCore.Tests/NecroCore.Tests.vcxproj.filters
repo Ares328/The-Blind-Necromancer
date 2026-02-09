@@ -29,6 +29,9 @@
     <ClCompile Include="EnvironmentTest.cpp">
       <Filter>Environment</Filter>
     </ClCompile>
+    <ClCompile Include="TrapTest.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

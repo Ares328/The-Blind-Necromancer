@@ -211,6 +211,12 @@ namespace NecroCore
 			entity.x = targetMoveX;
 			entity.y = targetMoveY;
 			anyHostileActed = true;
+			const std::string trapMsg = game.HandleTrapOnActor(entity);
+			if (!trapMsg.empty())
+			{
+				oss << "\n" << trapMsg;
+			}
+
 			return true;
 		}
 		return false;

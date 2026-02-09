@@ -12,6 +12,7 @@ namespace NecroCore
 		Floor,
 		Wall,
 		Door,
+		Trap,
 	};
 
 	class Map
@@ -27,7 +28,8 @@ namespace NecroCore
 		void SetTileState(int x, int y, StatusEffect newState);
 
 		bool IsWalkable(int x, int y) const;
-		bool IsDoor(int x, int y) const;
+		bool IsDoor(int x, int y) const { return GetTile(x, y) == TileType::Door; }
+		bool IsTrap(int x, int y) const { return GetTile(x, y) == TileType::Trap; }
 
 		void LoadFromAscii(const std::vector<std::string>& lines);
 

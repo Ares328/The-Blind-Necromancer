@@ -43,15 +43,11 @@ namespace NecroCore
 			return false;
 		case TileType::Empty:
 			return false;
+		case TileType::Trap:
+			return true;
 		default:
 			return false;
 		}
-	}
-
-	bool Map::IsDoor(int x, int y) const
-	{
-		TileType tile = GetTile(x, y);
-		return tile == TileType::Door;
 	}
 
 	void Map::LoadFromAscii(const std::vector<std::string>& lines)

@@ -107,6 +107,7 @@
     <ClCompile Include="PulseTest.cpp" />
     <ClCompile Include="SummonCommandTest.cpp" />
     <ClCompile Include="SummonTest.cpp" />
+    <ClCompile Include="TrapTest.cpp" />
     <ClCompile Include="TurnTest.cpp" />
   </ItemGroup>
   <ItemGroup>

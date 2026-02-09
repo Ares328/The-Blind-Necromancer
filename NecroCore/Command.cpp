@@ -209,9 +209,15 @@ namespace NecroCore
 					finalResult.success = false;
 					break;
 				}
+
 				finalResult.payload = moveResult;
 				finalResult.description = "You move " + direction + ".";
 				finalResult.success = true;
+				const std::string trapMsg = HandleTrapOnActor(m_Player);
+				if (!trapMsg.empty())
+				{
+					finalResult.description += "\n" + trapMsg;
+				}
 				break;
 			}
 			case CommandAction::Summon:

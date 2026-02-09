@@ -16,6 +16,7 @@ namespace NecroCore
 	Game::Game(const std::string& playerName, const std::string& mapName)
 		: m_PlayerName(playerName)
 	{
+		m_Player.name = playerName;
 		InitializeMap(mapName);
 	}
 	Game::Game(const std::string& playerName)
@@ -358,6 +359,11 @@ namespace NecroCore
 	{
 		m_Map.convertTile(x, y, TileType::Door);
 	}
+	void Game::SpawnTrapAt(int x, int y, StatusEffect trapType)
+	{
+		m_Map.convertTile(x, y, TileType::Trap);
+		m_Map.SetTileState(x, y, trapType);
+	}
 	CommandResult Game::ApplyTurn(const std::string& command)
 	{
 		CommandResult playerResult = ApplyCommand(command);
@@ -375,5 +381,38 @@ namespace NecroCore
 		envSystem.ApplyTurn(*this, playerResult);
 
 		return playerResult;
+	}
+	static std::string TrapMessageForActor(const Actor& actor, StatusEffect effect)
+	{
+		switch (effect)
+		{
+		case StatusEffect::OnFire:
+			return "A hidden fire trap erupts beneath " + actor.name + "!";
+		case StatusEffect::Poisoned:
+			return "A hidden poison trap is sprung beneath " + actor.name + "!";
+		default:
+			return "A hidden trap is triggered beneath " + actor.name + "!";
+		}
+	}
+
+	std::string Game::HandleTrapOnActor(Actor& actor)
+	{
+		const int x = actor.x;
+		const int y = actor.y;
+
+		if (!m_Map.IsTrap(x, y))
+			return {};
+
+		StatusEffect trapEffect = m_Map.GetTileState(x, y);
+
+		if (trapEffect != StatusEffect::Normal)
+		{
+			actor.AddStatus(trapEffect);
+		}
+
+		m_Map.convertTile(x, y, TileType::Floor);
+		m_Map.SetTileState(x, y, StatusEffect::Normal);
+
+		return TrapMessageForActor(actor, trapEffect);
 	}
 }

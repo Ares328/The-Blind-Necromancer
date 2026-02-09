@@ -38,6 +38,7 @@ namespace NecroCore
 		void SpawnFriendlyAt(int x, int y);
 		void SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage, std::string name);
 
+		void SpawnTrapAt(int x, int y, StatusEffect trapType);
 		void SpawnDoorAt(int x, int y);
 
 		MoveResult MovePlayer(int dx, int dy);
@@ -54,6 +55,8 @@ namespace NecroCore
 		Map& GetMap() { return m_Map; }
 
 		bool IsTileFree(int x, int y) const;
+
+		std::string HandleTrapOnActor(Actor& actor);
 
 	private:
 		std::string m_PlayerName;
