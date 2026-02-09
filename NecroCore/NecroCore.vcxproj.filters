@@ -46,6 +46,9 @@
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{9cb9c28d-a263-441d-aa5a-7790b5de81b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Effects">
+      <UniqueIdentifier>{91772bed-99e2-4691-a882-6864e9535f2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -118,6 +121,12 @@
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>Header Files\Pathing</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Header Files\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="Status.h">
+      <Filter>Header Files\Effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

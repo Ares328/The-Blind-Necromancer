@@ -1,4 +1,5 @@
 #include "Map.h"
+#include "Status.h"
 
 namespace NecroCore
 {
@@ -12,13 +13,21 @@ namespace NecroCore
 		return m_Tiles[static_cast<std::size_t>(y) * m_Width + x];
 	}
 
-	TileState Map::GetTileState(int x, int y) const
+	StatusEffect Map::GetTileState(int x, int y) const
 	{
 		if (x < 0 || y < 0 || x >= m_Width || y >= m_Height)
 		{
-			return TileState::Normal;
+			return StatusEffect::Normal;
 		}
 		return m_TileStates[static_cast<std::size_t>(y) * m_Width + x];
+	}
+	void Map::SetTileState(int x, int y, StatusEffect newState)
+	{
+		if (x < 0 || y < 0 || x >= m_Width || y >= m_Height)
+		{
+			return;
+		}
+		m_TileStates[static_cast<std::size_t>(y) * m_Width + x] = newState;
 	}
 
 	bool Map::IsWalkable(int x, int y) const
@@ -54,7 +63,7 @@ namespace NecroCore
 		m_Tiles.reserve(static_cast<std::size_t>(m_Width) * m_Height);
 
 		m_TileStates.clear();
-		m_TileStates.resize(static_cast<std::size_t>(m_Width) * m_Height, TileState::Normal);
+		m_TileStates.resize(static_cast<std::size_t>(m_Width) * m_Height, StatusEffect::Normal);
 
 		for (int y = 0; y < m_Height; ++y)
 		{
@@ -112,28 +121,5 @@ namespace NecroCore
 		const int dx = toX - fromX;
 		const int dy = toY - fromY;
 		return DirectionNameFromDelta(dx, dy);
-	}
-
-	bool Map::IsOnFire(int x, int y) const
-	{
-		return HasState(GetTileState(x, y), TileState::OnFire);
-	}
-
-	void Map::SetOnFire(int x, int y, bool onFire)
-	{
-		if (x < 0 || y < 0 || x >= m_Width || y >= m_Height)
-			return;
-
-		auto& state = m_TileStates[static_cast<std::size_t>(y) * m_Width + x];
-		unsigned char v = static_cast<unsigned char>(state);
-		if (onFire)
-		{
-			v |= static_cast<unsigned char>(TileState::OnFire);
-		}
-		else
-		{
-			v &= ~static_cast<unsigned char>(TileState::OnFire);
-		}
-		state = static_cast<TileState>(v);
 	}
 }

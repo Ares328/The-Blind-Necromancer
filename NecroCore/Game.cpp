@@ -114,10 +114,11 @@ namespace NecroCore
 		hostileEntity.aiState = EntityState::Attack;
 		hostileEntity.hp = 10;
 		hostileEntity.maxHp = 10;
+		hostileEntity.name = "Skeleton";
 		hostileEntity.attackDamage = 1;
 		m_Entities.push_back(hostileEntity);
 	}
-	void Game::SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage)
+	void Game::SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage, std::string name)
 	{
 		if (!m_Map.IsWalkable(x, y)) return;
 		Entity hostileEntity;
@@ -128,11 +129,12 @@ namespace NecroCore
 		hostileEntity.aggroRange = 5;
 		hostileEntity.hp = hp;
 		hostileEntity.maxHp = hp;
+		hostileEntity.name = name;
 		hostileEntity.attackDamage = attackDamage;
 		hostileEntity.aiState = EntityState::Attack;
 		m_Entities.push_back(hostileEntity);
 	}
-	void Game::SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage)
+	void Game::SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage, std::string name)
 	{
 		if (!m_Map.IsWalkable(x, y)) return;
 		Entity friendlyEntity;
@@ -143,6 +145,7 @@ namespace NecroCore
 		friendlyEntity.aggroRange = 5;
 		friendlyEntity.hp = hp;
 		friendlyEntity.maxHp = hp;
+		friendlyEntity.name = name;
 		friendlyEntity.attackDamage = attackDamage;
 		friendlyEntity.aiState = EntityState::FollowPlayer;
 		m_Entities.push_back(friendlyEntity);
@@ -160,6 +163,7 @@ namespace NecroCore
 		friendlyEntity.aiState = EntityState::FollowPlayer;
 		friendlyEntity.hp = 5;
 		friendlyEntity.maxHp = 5;
+		friendlyEntity.name = "friendly undead";
 		friendlyEntity.attackDamage = 1;
 		m_Entities.push_back(friendlyEntity);
 	}

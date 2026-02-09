@@ -33,10 +33,10 @@ namespace NecroCore
 
 		void SpawnHostile();
 		void SpawnHostileAt(int x, int y);
-		void SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage);
+		void SpawnHostileWithStatsForTest(int x, int y, int hp, int attackDamage, std::string name);
 		void SpawnFriendly();
 		void SpawnFriendlyAt(int x, int y);
-		void SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage);
+		void SpawnFriendlyWithStatsForTest(int x, int y, int hp, int attackDamage, std::string name);
 
 		void SpawnDoorAt(int x, int y);
 

@@ -150,9 +150,11 @@
     <ClCompile Include="SummonsAISystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="AttackResult.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Pathfinding.h" />
+    <ClInclude Include="Status.h" />
     <ClInclude Include="SummonCommandResult.h" />
     <ClInclude Include="CommandSerialization.h" />
     <ClInclude Include="Entity.h" />

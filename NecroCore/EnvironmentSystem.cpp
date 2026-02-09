@@ -1,96 +1,155 @@
 #include "EnvironmentSystem.h"
 #include "Game.h"
 #include "Map.h"
+#include "Entity.h"
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 namespace NecroCore
 {
     void EnvironmentSystem::ApplyTurn(Game& game, CommandResult& result)
     {
+        auto& entities = game.GetEntities();
+        Player& player = game.GetPlayer();
+        Map& map = game.GetMap();
+
         std::ostringstream oss;
         oss << result.description;
 
-        bool firstAppend = true;
+        bool firstAppend = result.description.empty();
         auto appendSeparator = [&]()
-        {
-            if (firstAppend)
             {
-                oss << "\n";
+                if (!firstAppend)
+                {
+                    oss << "\n";
+                }
                 firstAppend = false;
-            }
-            else
+            };
+
+        auto formatEntityMessage = [&](const char* tmpl, const std::string& entityName) -> std::string
             {
-                oss << "\n";
-            }
-        };
-        Map& map = const_cast<Map&>(game.GetMap());
-        // Player fire damage
-        {
-            Player& player = const_cast<Player&>(game.GetPlayer());
-            const int px = player.x;
-            const int py = player.y;
-
-            if (map.IsOnFire(px, py) && player.hp > 0)
-            {
-                player.hp -= 1;
-                if (player.hp < 0) player.hp = 0;
-
-                appendSeparator();
-                oss << "Flames bite at your legs, heat searing your skin.";
-
-                if (player.hp == 0 && !result.gameOver)
+                if (!tmpl) return {};
+                std::string msg = tmpl;
+                const std::string placeholder = "{entity}";
+                const auto pos = msg.find(placeholder);
+                if (pos != std::string::npos)
                 {
-                    appendSeparator();
-                    oss << "You finally sink into the blaze, vision drowning in red.";
-                    result.gameOver = true;
+                    msg.replace(pos, placeholder.size(), entityName);
                 }
-            }
-        }
+                return msg;
+            };
 
-		// Entity fire damage
-        {
-            Map& map = const_cast<Map&>(game.GetMap());
-            auto& entities = const_cast<std::vector<Entity>&>(game.GetEntities());
-
-			std::cout << "[EnvironmentSystem] Processing " << entities.size() << " entities for fire damage.\n";
-            for (Entity& entity : entities)
+        auto effectFromTile = [&](Actor& actor, StatusEffect status)
             {
-                if (entity.hp <= 0) continue;
-				std::cout << "[EnvironmentSystem] Checking entity " << entity.id << " at (" << entity.x << "," << entity.y << ") for fire damage.\n";
-                std::cout << "[EnvironmentSystem] is map on fire " << map.IsOnFire(entity.x, entity.y) << ".\n";
-                if (!map.IsOnFire(entity.x, entity.y)) continue;
-
-                entity.hp -= 1;
-                if (entity.hp < 0) entity.hp = 0;
-
-                if (entity.faction == Faction::Friendly)
+                if (map.GetTileState(actor.x, actor.y) == status && actor.status != status)
                 {
-                    appendSeparator();
-                    if (entity.hp == 0)
+                    actor.AddStatus(status);
+                }
+            };
+
+        auto tickStatuses = [&](Actor& actor, bool isPlayer)
+            {
+                std::vector<StatusEffect> toProcess;
+                toProcess.reserve(actor.statusDurations.size());
+                for (auto& kv : actor.statusDurations)
+                {
+                    toProcess.push_back(kv.first);
+                }
+
+                for (StatusEffect status : toProcess)
+                {
+                    auto it = actor.statusDurations.find(status);
+                    if (it == actor.statusDurations.end())
+                        continue;
+
+                    int& duration = it->second;
+                    if (duration <= 0)
                     {
-                        oss << "Your summoned ally succumbs to the flames.";
+                        actor.ClearStatus(status);
+                        continue;
+                    }
+
+                    auto descOpt = GetStatusDescriptor(status);
+                    if (!descOpt)
+                    {
+                        --duration;
+                        if (duration <= 0)
+                            actor.ClearStatus(status);
+                        continue;
+                    }
+
+                    const StatusDescriptor& desc = *descOpt;
+
+                    if (desc.damagePerTurn > 0 && actor.IsAlive())
+                    {
+                        actor.ApplyDamage(desc.damagePerTurn);
+                    }
+
+                    if (isPlayer)
+                    {
+                        appendSeparator();
+                        if (actor.IsAlive())
+                        {
+                            oss << desc.playerTickMessage;
+                        }
+                        else
+                        {
+                            oss << desc.playerDeathMessage;
+                        }
                     }
                     else
                     {
-                        oss << "Your summoned ally writhes in fire.";
-					}
-                }
-                else if (entity.faction == Faction::Hostile)
-                {
-                    appendSeparator();
-                    if (entity.hp == 0)
-                    {
-                        oss << "A nearby hostile creature is consumed by the flames, leaving only ashes.";
+                        appendSeparator();
+                        if (actor.IsAlive())
+                        {
+                            oss << formatEntityMessage(desc.entityTickMessage, actor.name);
+                        }
+                        else
+                        {
+                            oss << formatEntityMessage(desc.entityDeathMessage, actor.name);
+                        }
                     }
-                    else
+
+                    --duration;
+                    if (duration <= 0)
                     {
-                        oss << "Somewhere nearby, something snarls in burning agony.";
+                        if (isPlayer)
+                        {
+                            appendSeparator();
+                            oss << desc.playerEndMessage;
+                        }
+                        else
+                        {
+                            appendSeparator();
+                            oss << formatEntityMessage(desc.entityEndMessage, actor.name);
+                        }
+                        actor.ClearStatus(status);
                     }
                 }
-            }
+            };
+
+        // Player tile/tick effects
+        StatusEffect playerTileEffect = map.GetTileState(player.x, player.y);
+        effectFromTile(player, playerTileEffect);
+
+        tickStatuses(player, true);
+        if (!player.IsAlive() && !result.gameOver)
+        {
+            result.gameOver = true;
         }
+
+        // Entity tile/tick effects
+        for (Entity& entity : entities)
+        {
+            if (!entity.IsAlive()) continue;
+
+            StatusEffect entityTileEffect = map.GetTileState(entity.x, entity.y);
+            effectFromTile(entity, entityTileEffect);
+
+            tickStatuses(entity, false);
+		}
 
         result.description = oss.str();
     }

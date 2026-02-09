@@ -152,8 +152,8 @@ TEST(SummonTest, SummonedEntityDiesAfterAttack)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 2, player.y + 1, 2, 1);
-	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 2, player.y + 1, 2, 1, "Skeleton");
+	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1, "friendly undead");
 	auto command = game.ApplyTurn("command all guard");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("A hostile slays your summoned ally."));
@@ -163,8 +163,8 @@ TEST(SummonTest, SummonedEntityWontAttackBeyondAggroRange)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(1, 1, 2, 1);
-	game.SpawnFriendlyWithStatsForTest(5, 9, 1, 1);
+	game.SpawnHostileWithStatsForTest(1, 1, 2, 1, "Skeleton");
+	game.SpawnFriendlyWithStatsForTest(5, 9, 1, 1, "friendly undead");
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_FALSE(command.success);
 	EXPECT_EQ(std::string::npos, command.description.find("Your summoned ally has no targets."));
@@ -173,8 +173,8 @@ TEST(SummonTest, SummonedEntityWillAttackWithinAggroRange)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 2, player.y + 1, 2, 1);
-	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 2, player.y + 1, 2, 1, "Skeleton");
+	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1, "friendly undead");
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally strikes at a foe."));

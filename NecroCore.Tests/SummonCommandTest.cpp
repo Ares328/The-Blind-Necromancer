@@ -19,7 +19,7 @@ TEST(SummonCommandTest, SummonedEntityMovesTowardHostile)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 3, player.y + 1, 2, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 3, player.y + 1, 2, 1, "Skeleton");
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
@@ -30,7 +30,7 @@ TEST(SummonCommandTest, SummonedEntityAttacksHostile)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 2, player.y, 2, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 2, player.y, 2, 1, "Skeleton");
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
@@ -40,7 +40,7 @@ TEST(SummonCommandTest, SummonedEntityAttacksHostileAndGetsAttacked)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 2, player.y, 2, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 2, player.y, 2, 1, "Skeleton");
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
@@ -51,7 +51,7 @@ TEST(SummonCommandTest, SummonedEntityKillsHostile)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 2, player.y, 1, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 2, player.y, 1, 1, "Skeleton");
 	game.SpawnFriendlyAt(player.x + 1, player.y);
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
@@ -112,7 +112,7 @@ TEST(SummonCommandTest, SummonCommandReturnsFalseOnUnknownOrder)
 TEST(SummonCommandTest, SummonCommandReturnsCorrectArgs)
 {
 	Game game("Ares");
-	game.SpawnFriendlyWithStatsForTest(game.GetPlayer().x + 1, game.GetPlayer().y, 1, 1);
+	game.SpawnFriendlyWithStatsForTest(game.GetPlayer().x + 1, game.GetPlayer().y, 1, 1, "friendly undead");
 	auto command = game.ApplyCommand("command all attack");
 	auto itTarget = command.args.find("target");
 	ASSERT_NE(itTarget, command.args.end());
@@ -127,7 +127,7 @@ TEST(SummonCommandTest, SummonAttacksWhenSpawned)
 {
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
-	game.SpawnHostileWithStatsForTest(player.x + 1, player.y - 1, 2, 1);
+	game.SpawnHostileWithStatsForTest(player.x + 1, player.y - 1, 2, 1, "Skeleton");
 	auto summonCommand = game.ApplyCommand("summon skeleton");
 	EXPECT_TRUE(summonCommand.success);
 	auto turnCommand = game.ApplyTurn("command all attack");

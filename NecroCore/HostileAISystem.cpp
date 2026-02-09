@@ -151,9 +151,8 @@ namespace NecroCore
 		{
 			anyHostileActed = true;
 
-			targetEntity->hp -= entity.attackDamage;
-			if (targetEntity->hp <= 0) {
-				targetEntity->hp = 0;
+			targetEntity->ApplyDamage(entity.attackDamage);
+			if (!targetEntity->IsAlive()) {
 				appendSeparator();
 				oss << "A hostile slays your summoned ally.";
 			}

@@ -40,7 +40,7 @@ TEST(CommandTests, ApplyTurnAttackCanKillHostile)
 	Game game("Ares");
 	const Player& player = game.GetPlayer();
 
-	game.SpawnHostileWithStatsForTest(player.x, player.y - 1, 1, 1);
+	game.SpawnHostileWithStatsForTest(player.x, player.y - 1, 1, 1, "Skeleton");
 
 	CommandResult command = game.ApplyTurn("attack north");
 
