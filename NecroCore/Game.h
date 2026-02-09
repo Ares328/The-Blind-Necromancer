@@ -68,7 +68,5 @@ namespace NecroCore
 		Map m_Map;
 
 		void InitializeMap(const std::string& mapName);
-
-		std::string DescribeNearbyDoors(int radius) const;
 	};
 };

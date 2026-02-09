@@ -92,3 +92,50 @@ TEST(TrapTest, TrapTriggersOnlyOnce)
     EXPECT_EQ(std::string::npos,
         third.description.find("A hidden fire trap erupts beneath Ares!"));
 }
+
+TEST(TrapTest, PulseCommandReportsNearbyTrapsInDescription)
+{
+    Game game("Ares");
+    Map& map = game.GetMap();
+    const Player& player = game.GetPlayer();
+
+    const int px = player.x;
+    const int py = player.y;
+
+    game.SpawnTrapAt(px + 1, py, StatusEffect::OnFire);
+    game.SpawnTrapAt(px, py - 2, StatusEffect::Poisoned);
+
+    CommandResult cmd = game.ApplyTurn("pulse");
+
+    const std::string desc = cmd.description;
+
+    EXPECT_NE(std::string::npos,
+        desc.find("Your senses extend outward."));
+
+    EXPECT_NE(std::string::npos,
+        desc.find("You sense a fire trap to the east"));
+    EXPECT_NE(std::string::npos,
+        desc.find("You sense a poison trap to the north"));
+}
+
+TEST(TrapTest, PulseCommandReportsFarAwayTrapsInDescription)
+{
+    Game game("Ares");
+    Map& map = game.GetMap();
+    const Player& player = game.GetPlayer();
+    const int px = player.x;
+    const int py = player.y;
+    game.SpawnTrapAt(px + 5, py, StatusEffect::OnFire);
+    game.SpawnTrapAt(px, py - 3, StatusEffect::Poisoned);
+    game.SpawnTrapAt(px - 5, py + 3, StatusEffect::OnFire);
+    CommandResult cmd = game.ApplyTurn("pulse");
+    const std::string desc = cmd.description;
+    EXPECT_NE(std::string::npos,
+        desc.find("Your senses extend outward."));
+    EXPECT_NE(std::string::npos,
+        desc.find("You sense a fire trap to the east"));
+    EXPECT_NE(std::string::npos,
+		desc.find("You sense a poison trap to the north"));
+    EXPECT_NE(std::string::npos,
+        desc.find("You sense a fire trap to the south-west"));
+}

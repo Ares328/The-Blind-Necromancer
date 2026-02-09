@@ -76,29 +76,123 @@ namespace NecroCore
 	PulseResult Game::Pulse(int radius) const
 	{
 		PulseResult result;
+		result.description = "";
 
 		const int playerX = m_Player.x;
 		const int playerY = m_Player.y;
 
+		std::vector<std::pair<int, int>> reachable = Pathfinder::BfsReachable(m_Map, playerX, playerY, radius);
+
+		auto isReachable = [&](int x, int y) -> bool
+			{
+				for (const auto& pos : reachable)
+				{
+					if (pos.first == x && pos.second == y)
+						return true;
+				}
+				return false;
+			};
+
+		bool firstDoor = true;
+		for (const auto& pos : reachable)
+		{
+			const int tx = pos.first;
+			const int ty = pos.second;
+
+			if (!m_Map.IsDoor(tx, ty))
+				continue;
+
+			const char* dirName = Map::DirectionNameFromPoints(playerX, playerY, tx, ty);
+			if (!dirName)
+				continue;
+
+			if (firstDoor)
+			{
+				result.description += " ";
+				firstDoor = false;
+			}
+			else
+			{
+				result.description += " ";
+			}
+
+			result.description += "\nThere is a door to the ";
+			result.description += dirName;
+			result.description += ".";
+		}
+
+
+		// 2) Describe entities within reach
 		for (const Entity& entity : m_Entities)
 		{
-			int dx = entity.x - playerX;
-			int dy = entity.y - playerY;
-			int distance = std::abs(dx) + std::abs(dy); // Using Manhattan distance for simplicity
-			
-			if (distance > radius)
-			{
+			if (!entity.IsAlive())
 				continue;
-			}
+			if (!isReachable(entity.x, entity.y))
+				continue;
+
+			const char* dirName = Map::DirectionNameFromPoints(playerX, playerY, entity.x, entity.y);
+			if (!dirName)
+				continue;
+
+			result.description += "\nYou sense ";
 
 			if (entity.faction == Faction::Hostile)
 			{
-				result.detectedHostileCount++;
+				result.description += "a hostile presence";
+				result.detectedHostileCount += 1;
 			}
 			else if (entity.faction == Faction::Friendly)
 			{
-				result.detectedFriendlyCount++;
+				result.description += "a friendly presence";
+				result.detectedFriendlyCount += 1;
 			}
+			else
+			{
+				result.description += "a presence";
+			}
+
+			result.description += " to the ";
+			result.description += dirName;
+			result.description += ".";
+		}
+
+
+		// 3) Describe traps within reach
+		for (const auto& pos : reachable)
+		{
+			const int tx = pos.first;
+			const int ty = pos.second;
+
+			if (!m_Map.IsTrap(tx, ty))
+				continue;
+
+			const char* dirName = Map::DirectionNameFromPoints(playerX, playerY, tx, ty);
+			if (!dirName)
+				continue;
+
+			StatusEffect trapEffect = m_Map.GetTileState(tx, ty);
+
+			result.description += "\nYou sense ";
+
+			if (trapEffect == StatusEffect::OnFire)
+			{
+				result.description += "a fire trap";
+				result.detectedTrapCount += 1;
+			}
+			else if (trapEffect == StatusEffect::Poisoned)
+			{
+				result.description += "a poison trap";
+				result.detectedTrapCount += 1;
+			}
+			else
+			{
+				result.description += "a trap";
+				result.detectedTrapCount += 1;
+			}
+
+			result.description += " to the ";
+			result.description += dirName;
+			result.description += ".";
 		}
 		return result;
 	}
@@ -331,29 +425,6 @@ namespace NecroCore
 				return false;
 		}
 		return true;
-	}
-	std::string Game::DescribeNearbyDoors(int radius) const
-	{
-		std::ostringstream oss;
-		bool first = true;
-
-		for (const auto& d : m_Map.dirs)
-		{
-			const int tx = m_Player.x + d.dx;
-			const int ty = m_Player.y + d.dy;
-			if (m_Map.IsDoor(tx, ty))
-			{
-				if (!first)
-				{
-					oss << " ";
-				}
-				first = false;
-				std::cout << "There is a door to the " << d.name << ".\n";
-				oss << "There is a door to the " << d.name << ".";
-			}
-		}
-
-		return oss.str();
 	}
 	void Game::SpawnDoorAt(int x, int y)
 	{

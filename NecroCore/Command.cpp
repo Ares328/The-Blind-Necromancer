@@ -165,12 +165,7 @@ namespace NecroCore
 				PulseResult pulseResult = Pulse(radius);
 
 				finalResult.payload = pulseResult;
-				finalResult.description = "Your senses extend outward.";
-				const std::string doorHint = DescribeNearbyDoors(radius);
-				if (!doorHint.empty())
-				{
-					finalResult.description += "\n" + doorHint;
-				}
+				finalResult.description = "Your senses extend outward." + pulseResult.description;
 				finalResult.success = true;
 				break;
 			}
