@@ -44,6 +44,7 @@ namespace NecroCore
 		void SpawnDoorAt(int x, int y);
 
 		MoveResult MovePlayer(int dx, int dy);
+		MoveResult MoveEntity(Entity entity, int dx, int dy);
 
 		SummonResult SummonFriendlyNextToPlayer();
 
@@ -52,6 +53,9 @@ namespace NecroCore
 
 		const Player& GetPlayer() const { return m_Player; }
 		Player& GetPlayer() { return m_Player; }
+
+		Entity* GetEntityById(int id);
+		Entity* GetEntityByName(const std::string& name);
 
 		const Map& GetMap() const { return m_Map; }
 		Map& GetMap() { return m_Map; }

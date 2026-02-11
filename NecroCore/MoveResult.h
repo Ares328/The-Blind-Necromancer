@@ -8,5 +8,6 @@ namespace NecroCore
 		int newY;
 		int oldX;
 		int oldY;
+		bool success = true;
 	};
 }

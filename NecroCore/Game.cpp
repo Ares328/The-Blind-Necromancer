@@ -54,6 +54,7 @@ namespace NecroCore
 		{
 			result.newX = oldX;
 			result.newY = oldY;
+			result.success = false;
 			return result;
 		}
 
@@ -64,6 +65,64 @@ namespace NecroCore
 
 		return result;
 	}
+
+	MoveResult Game::MoveEntity(Entity entity, int dx, int dy)
+	{
+		int oldX = entity.x;
+		int oldY = entity.y;
+
+		int newX = oldX + dx;
+		int newY = oldY + dy;
+
+		std::cout << "[MoveEntity] from (" << oldX << "," << oldY
+			<< ") to (" << newX << "," << newY << ")\n";
+
+		bool walkable = m_Map.IsWalkable(newX, newY);
+		bool free = IsTileFree(newX, newY);
+		std::cout << "[MoveEntity] IsWalkable(" << newX << "," << newY
+			<< ") = " << (walkable ? "true" : "false")
+			<< ", IsTileFree = " << (free ? "true" : "false") << "\n";
+
+		MoveResult result{};
+		result.oldX = oldX;
+		result.oldY = oldY;
+
+		if (!walkable || !free)
+		{
+			result.newX = oldX;
+			result.newY = oldY;
+			result.success = false;
+			return result;
+		}
+
+		entity.MoveTo(newX, newY);
+
+		result.newX = newX;
+		result.newY = newY;
+
+		return result;
+	}
+
+	Entity* Game::GetEntityById(int id)
+	{
+		for (Entity& entity : m_Entities)
+		{
+			if (entity.id == id)
+				return &entity;
+		}
+		return nullptr;
+	}
+
+	Entity* Game::GetEntityByName(const std::string& name)
+	{
+		for (Entity& entity : m_Entities)
+		{
+			if (entity.name == name)
+				return &entity;
+		}
+		return nullptr;
+	}
+
 	std::string Game::GetCurrentDescription() const
 	{
 		return "You stand at the edge of a realm of darkness, "

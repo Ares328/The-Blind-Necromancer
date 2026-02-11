@@ -141,3 +141,37 @@ TEST(SummonCommandTest, SummonCommandNoSummonsResult)
 	EXPECT_FALSE(turnCommand.success);
 	EXPECT_NE(std::string::npos, turnCommand.description.find("You have no minions to command."));
 }
+
+TEST(SummonCommandTest, SummonCommandMoveSummonNorth)
+{
+	Game game("Ares");
+	const Player& player = game.GetPlayer();
+	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 2, 1, "skely");
+	auto command = game.ApplyTurn("command skely move north");
+	std::cout << command.description << "\n";
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("Your skely moves north."));
+}
+
+TEST(SummonCommandTest, SummonCommandMoveSummonNorthBlocked)
+{
+	Game game("Ares");
+	const Player& player = game.GetPlayer();
+	game.SpawnFriendlyWithStatsForTest(1,1, 2, 1, "skely");
+	auto command = game.ApplyTurn("command skely move north");
+	std::cout << command.description << "\n";
+	EXPECT_FALSE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("Your skely tries to move north, but was blocked."));
+}
+
+TEST(SummonCommandTest, SummonCommandMoveSummonNorthWithEnemy)
+{
+	Game game("Ares");
+	const Player& player = game.GetPlayer();
+	game.SpawnHostileWithStatsForTest(player.x, player.y + 2, 2, 1, "Skeleton");
+	game.SpawnFriendlyWithStatsForTest(player.x, player.y + 1, 2, 1, "skely");
+	auto command = game.ApplyTurn("command skely move north");
+	std::cout << command.description << "\n";
+	EXPECT_FALSE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("Your skely tries to move north, but was blocked."));
+}

@@ -7,6 +7,7 @@
 #include "AttackResult.h"
 #include "SummonCommandResult.h"
 
+#include <iostream>
 #include <sstream>
 
 namespace NecroCore
@@ -143,8 +144,19 @@ namespace NecroCore
 				return result;
 			}
 
+			std::string direction;
+			if (order == "move" && !(iss >> direction))
+			{
+				result.description = "Move where?";
+				result.success = false;
+				return result;
+			}
+			else {
+				result.args["direction"] = direction;
+			}
+
 			result.args["target"] = target; // "all" | "skeleton#1"
-			result.args["order"] = order;  // "follow" | "guard" | "attack"
+			result.args["order"] = order;  // "follow" | "guard" | "attack" | "move"
 			result.description = "Command parsed.";
 			result.success = true;
 		}
@@ -378,13 +390,6 @@ namespace NecroCore
 				const std::string& target = std::get<std::string>(itTarget->second);
 				const std::string& order = std::get<std::string>(itOrder->second);
 
-				if (target != "all")
-				{
-					finalResult.description = "Only the collective heed your call for now.";
-					finalResult.success = false;
-					break;
-				}
-
 				EntityState newState;
 				if (order == "follow")
 				{
@@ -397,6 +402,41 @@ namespace NecroCore
 				else if (order == "attack")
 				{
 					newState = EntityState::Attack;
+				}
+				else if (order == "move")
+				{
+					auto itDirection = command.args.find("direction");
+					std::cout << "Looking for direction argument in move order...\n";
+					if (itDirection == command.args.end() || !std::holds_alternative<std::string>(itDirection->second))
+					{
+						finalResult.description = "Move where?";
+						finalResult.success = false;
+						break;
+					}
+					const std::string& direction = std::get<std::string>(itDirection->second);
+					int dx = 0;
+					int dy = 0;
+
+					if (!m_Map.DirectionFromString(direction, dx, dy))
+					{
+						finalResult.description = "The direction '" + direction + "' is unknown to your minion.";
+						finalResult.success = false;
+						break;
+					}
+					Entity* targetEntity = GetEntityByName(target);
+					MoveResult moveResult = MoveEntity(*targetEntity, dx, dy);
+					if (!moveResult.success)
+					{
+						finalResult.description = "Your " + targetEntity->name + " tries to move " + direction + ", but was blocked.";
+						finalResult.success = false;
+						break;
+					}
+					else {
+						finalResult.description = "Your " + targetEntity->name + " moves " + direction + ".";
+						newState = EntityState::Guard;
+						finalResult.success = true;
+					}
+					break;
 				}
 				else
 				{
