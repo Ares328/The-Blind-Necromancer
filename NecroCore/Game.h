@@ -26,6 +26,8 @@ namespace NecroCore
 		PulseResult Pulse() const;
 		PulseResult Pulse(int radius) const;
 
+		CastResult CastSpell(const std::string& element, const std::string& direction);
+
 		CommandResult ApplyCommand(const std::string& command);
 		CommandResult ParseCommand(const std::string& command);
 		CommandResult ExecuteCommand(const CommandResult& command);

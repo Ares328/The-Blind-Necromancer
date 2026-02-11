@@ -2,6 +2,7 @@
 #include "PulseResult.h"
 #include "MoveResult.h"
 #include "SummonResult.h"
+#include "CastResult.h"
 #include "Pathfinding.h"
 #include "HostileAISystem.h"
 #include "SummonsAISystem.h"
@@ -122,7 +123,7 @@ namespace NecroCore
 		}
 
 
-		// 2) Describe entities within reach
+		// Describe entities within reach
 		for (const Entity& entity : m_Entities)
 		{
 			if (!entity.IsAlive())
@@ -174,12 +175,12 @@ namespace NecroCore
 
 			result.description += "\nYou sense ";
 
-			if (trapEffect == StatusEffect::OnFire)
+			if (HasStatus(trapEffect, StatusEffect::OnFire))
 			{
 				result.description += "a fire trap";
 				result.detectedTrapCount += 1;
 			}
-			else if (trapEffect == StatusEffect::Poisoned)
+			else if (HasStatus(trapEffect, StatusEffect::Poisoned))
 			{
 				result.description += "a poison trap";
 				result.detectedTrapCount += 1;
@@ -194,6 +195,81 @@ namespace NecroCore
 			result.description += dirName;
 			result.description += ".";
 		}
+		return result;
+	}
+	CastResult Game::CastSpell(const std::string & element, const std::string & direction)
+	{
+		CastResult result{};
+
+		int dx = 0;
+		int dy = 0;
+		int tx = 0;
+		int ty = 0;
+
+		if (direction == "self")
+		{
+			tx = m_Player.x;
+			ty = m_Player.y;
+		}
+		else
+		{
+			if (!m_Map.DirectionFromString(direction, dx, dy))
+			{
+				return result;
+			}
+
+			tx = m_Player.x + dx;
+			ty = m_Player.y + dy;
+		}
+		std::cout << "[CastSpell] Casting " << element << " towards " << direction
+			<< " (target tile: " << tx << "," << ty << ")\n";
+		if (element == "water")
+		{
+			bool didAnything = false;
+
+			StatusEffect tileState = m_Map.GetTileState(tx, ty);
+			if (HasStatus(tileState, StatusEffect::OnFire))
+			{
+				m_Map.SetTileState(tx, ty, StatusEffect::Normal);
+				if (m_Map.IsTrap(tx, ty))
+				{
+					m_Map.convertTile(tx, ty, TileType::Floor);
+				}
+				didAnything = true;
+			}
+
+			for (Entity& e : m_Entities)
+			{
+				if (e.x == tx && e.y == ty && e.IsAlive() &&
+					HasStatus(e.status, StatusEffect::OnFire))
+				{
+					e.ClearStatus(StatusEffect::OnFire);
+					didAnything = true;
+				}
+			}
+
+			if (m_Player.x == tx && m_Player.y == ty &&
+				m_Player.IsAlive() &&
+				HasStatus(m_Player.status, StatusEffect::OnFire))
+			{
+				std::cout << "[CastSpell] Water spell extinguishes fire on player.\n";
+				m_Player.ClearStatus(StatusEffect::OnFire);
+				didAnything = true;
+			}
+
+			if (didAnything)
+			{
+				result.description = "Water splashes over the flames, extinguishing them.";
+			}
+			else
+			{
+				result.description = "Water splashes harmlessly onto the cold stone.";
+			}
+
+			return result;
+		}
+
+		result.description = "You cast a spell of " + element + " towards " + direction + ", but nothing happens.";
 		return result;
 	}
 	void Game::SpawnHostileAt(int x, int y)

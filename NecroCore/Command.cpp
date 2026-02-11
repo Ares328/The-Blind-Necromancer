@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Map.h"
 #include "Command.h"
 #include "PulseResult.h"
 #include "MoveResult.h"
@@ -46,6 +47,22 @@ namespace NecroCore
 
 			result.args["radius"] = radius;
 			result.description = "Pulse command parsed.";
+			result.success = true;
+		}
+		else if (verb == "cast")
+		{
+			result.action = CommandAction::Cast;
+			std::string element;
+			std::string direction;
+			if (!(iss >> element >> direction))
+			{
+				result.description = "Cast what, and in which direction?";
+				result.success = false;
+				return result;
+			}
+			result.args["element"] = element; // "fire" | "water"
+			result.args["direction"] = direction;
+			result.description = "Cast command parsed.";
 			result.success = true;
 		}
 		else if (verb == "move")
@@ -169,6 +186,37 @@ namespace NecroCore
 				finalResult.success = true;
 				break;
 			}
+			case CommandAction::Cast:
+			{
+				auto itElement = command.args.find("element");
+				auto itDirection = command.args.find("direction");
+				if (itElement == command.args.end() || !std::holds_alternative<std::string>(itElement->second) ||
+					itDirection == command.args.end() || !std::holds_alternative<std::string>(itDirection->second))
+				{
+					finalResult.description = "Your incantation falters, lacking clarity of purpose.";
+					finalResult.success = false;
+					break;
+				}
+				const std::string& element = std::get<std::string>(itElement->second);
+				const std::string& direction = std::get<std::string>(itDirection->second);
+				if (!StatusEffectFromSpell(element))
+				{
+					finalResult.description = "The arcane forces reject your unknown element: " + element + ".";
+					finalResult.success = false;
+					break;
+				}
+				if (!m_Map.DirectionExists(direction) && direction != "self")
+				{
+					finalResult.description = "The arcane forces reject your unknown direction: " + direction + ".";
+					finalResult.success = false;
+					break;
+				}
+				CastResult castResult = CastSpell(element, direction);
+				finalResult.payload = castResult;
+				finalResult.description = castResult.description;
+				finalResult.success = true;
+				break;
+			}
 			case CommandAction::Move:
 			{
 				std::string direction;
@@ -186,11 +234,7 @@ namespace NecroCore
 				int dx = 0;
 				int dy = 0;
 
-				if (direction == "north") { dy = -1; }
-				else if (direction == "south") { dy = 1; }
-				else if (direction == "west") { dx = -1; }
-				else if (direction == "east") { dx = 1; }
-				else
+				if (!m_Map.DirectionFromString(direction, dx, dy))
 				{
 					finalResult.description = "You try to move, but the direction confuses you.";
 					finalResult.success = false;
@@ -266,11 +310,7 @@ namespace NecroCore
 				int dx = 0;
 				int dy = 0;
 
-				if (direction == "north") { dy = -1; }
-				else if (direction == "south") { dy = 1; }
-				else if (direction == "west") { dx = -1; }
-				else if (direction == "east") { dx = 1; }
-				else
+				if (!m_Map.DirectionFromString(direction, dx, dy))
 				{
 					finalResult.description = "You swing " + direction + ", but the notion of that direction escapes this realm.";
 					finalResult.success = false;

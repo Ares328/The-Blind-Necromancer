@@ -84,6 +84,9 @@
     <ClCompile Include="SummonsAISystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="CastResult.h">
+      <Filter>Header Files\Command\Results</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">

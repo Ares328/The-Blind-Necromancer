@@ -118,4 +118,30 @@ namespace NecroCore
 		const int dy = toY - fromY;
 		return DirectionNameFromDelta(dx, dy);
 	}
+
+	bool Map::DirectionFromString(const std::string& dir, int& outDx, int& outDy)
+	{
+		for (const auto& d : Map::dirs)
+		{
+			if (dir == d.name)
+			{
+				outDx = d.dx;
+				outDy = d.dy;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Map::DirectionExists(const std::string& dir) const
+	{
+		for (const auto& d : Map::dirs)
+		{
+			if (dir == d.name)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }

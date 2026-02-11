@@ -32,6 +32,9 @@
     <ClCompile Include="TrapTest.cpp">
       <Filter>Environment</Filter>
     </ClCompile>
+    <ClCompile Include="ElementalTest.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

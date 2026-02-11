@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 
 namespace NecroCore
 {
@@ -10,6 +11,7 @@ namespace NecroCore
         Normal = 0,
         OnFire = 1 << 0,
 		Poisoned = 1 << 1,
+		Wet = 1 << 2,
     };
 
     inline StatusEffect operator|(StatusEffect a, StatusEffect b)
@@ -42,6 +44,18 @@ namespace NecroCore
         int defaultDuration;
     };
 
+    inline std::optional<StatusEffect> StatusEffectFromSpell(const std::string& spellName)
+    {
+        if (spellName == "fire")
+            return StatusEffect::OnFire;
+        if (spellName == "poison")
+            return StatusEffect::Poisoned;
+        if (spellName == "water")
+			return StatusEffect::Wet;
+
+        return std::nullopt;
+    }
+
     inline std::optional<StatusDescriptor> GetStatusDescriptor(StatusEffect status)
     {
         switch (status)
@@ -68,6 +82,17 @@ namespace NecroCore
                 2,
                 3
 			};
+        case StatusEffect::Wet:
+            return StatusDescriptor{
+                "Water drips from your soaked clothes, chilling you to the bone.",
+                "A {entity} is drenched, water pooling around it.",
+                "You shiver as the water saps your strength.",
+                "A {entity} struggles to move through the water.",
+                "The water drips away, leaving you feeling warm.",
+                "The {entity} shakes off the water, regaining its composure.",
+                1,
+                2
+            };
         default:
             return std::nullopt;
         }

@@ -37,6 +37,9 @@ namespace NecroCore
 
 		static const char* DirectionNameFromDelta(int dx, int dy);
 		static const char* DirectionNameFromPoints(int fromX, int fromY, int toX, int toY);
+		
+		bool DirectionFromString(const std::string& dir, int& outDx, int& outDy);
+		bool DirectionExists(const std::string& dir) const;
 
 		int spawnX = 0;
 		int spawnY = 0;
