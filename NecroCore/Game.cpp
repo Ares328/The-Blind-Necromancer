@@ -12,7 +12,7 @@
 #include <sstream>
 #include <cstdlib>
 
-namespace NecroCore 
+namespace NecroCore
 {
 	Game::Game(const std::string& playerName, const std::string& mapName)
 		: m_PlayerName(playerName)
@@ -66,7 +66,7 @@ namespace NecroCore
 		return result;
 	}
 
-	MoveResult Game::MoveEntity(Entity entity, int dx, int dy)
+	MoveResult Game::MoveEntity(Entity& entity, int dx, int dy)
 	{
 		int oldX = entity.x;
 		int oldY = entity.y;
@@ -181,6 +181,26 @@ namespace NecroCore
 			result.description += ".";
 		}
 
+		for (const auto& pos : reachable)
+		{
+			const int tx = pos.first;
+			const int ty = pos.second;
+
+			if (!m_Map.IsFireplace(tx, ty))
+				continue;
+
+			const char* dirName = Map::DirectionNameFromPoints(playerX, playerY, tx, ty);
+			if (!dirName)
+				continue;
+
+			if (!HasStatus(m_Map.GetTileState(tx, ty), StatusEffect::OnFire))
+				continue;
+
+			result.description += "\nYou feel gentle warmth and hear a soft crackling to the ";
+			result.description += dirName;
+			result.description += ".";
+		}
+
 
 		// Describe entities within reach
 		for (const Entity& entity : m_Entities)
@@ -256,7 +276,7 @@ namespace NecroCore
 		}
 		return result;
 	}
-	CastResult Game::CastSpell(const std::string & element, const std::string & direction)
+	CastResult Game::CastSpell(const std::string& element, const std::string& direction)
 	{
 		CastResult result{};
 
@@ -305,6 +325,12 @@ namespace NecroCore
 					e.ClearStatus(StatusEffect::OnFire);
 					didAnything = true;
 				}
+			}
+
+			if (m_Map.IsFireplace(tx, ty))
+			{
+				m_Map.SetTileState(tx, ty, StatusEffect::Normal);
+				didAnything = true;
 			}
 
 			if (m_Player.x == tx && m_Player.y == ty &&
@@ -415,28 +441,28 @@ namespace NecroCore
 		constexpr int frontIndex = 0;
 
 		auto trySummonAt = [&](int sx, int sy) -> bool
-		{
-			if (!m_Map.IsWalkable(sx, sy))
-				return false;
-			if (!IsTileFree(sx, sy))
-				return false;
+			{
+				if (!m_Map.IsWalkable(sx, sy))
+					return false;
+				if (!IsTileFree(sx, sy))
+					return false;
 
-			Entity friendlyEntity;
-			friendlyEntity.id = m_NextEntityId++;
-			friendlyEntity.faction = Faction::Friendly;
-			friendlyEntity.x = sx;
-			friendlyEntity.y = sy;
-			friendlyEntity.aggroRange = 5;
-			friendlyEntity.aiState = EntityState::FollowPlayer;
-			friendlyEntity.hp = 5;
-			friendlyEntity.maxHp = 5;
-			friendlyEntity.attackDamage = 1;
+				Entity friendlyEntity;
+				friendlyEntity.id = m_NextEntityId++;
+				friendlyEntity.faction = Faction::Friendly;
+				friendlyEntity.x = sx;
+				friendlyEntity.y = sy;
+				friendlyEntity.aggroRange = 5;
+				friendlyEntity.aiState = EntityState::FollowPlayer;
+				friendlyEntity.hp = 5;
+				friendlyEntity.maxHp = 5;
+				friendlyEntity.attackDamage = 1;
 
-			m_Entities.push_back(friendlyEntity);
-			result.summonedEntity = friendlyEntity;
-			result.summonedDirection = Map::DirectionNameFromPoints(px, py, sx, sy);
-			return true;
-		};
+				m_Entities.push_back(friendlyEntity);
+				result.summonedEntity = friendlyEntity;
+				result.summonedDirection = Map::DirectionNameFromPoints(px, py, sx, sy);
+				return true;
+			};
 
 		const auto& d = Map::dirs[frontIndex];
 		const int sx = px + d.dx;
@@ -496,28 +522,40 @@ namespace NecroCore
 			spawnX = 1;
 			spawnY = 1;
 		}
+		else if (mapName == "fire_place_test")
+		{
+			map = {
+				"#######",
+				"#.....#",
+				"#..f..#",
+				"#.....#",
+				"#.....#",
+				"#.....#",
+				"#######",
+			};
+			spawnX = 3;
+			spawnY = 3;
+		}
 		else if (mapName == "map1")
 		{
-
-
 			map = {
 				"             #####   ",
 				"            #.....#  ",
 				"#####      #...o...# ",
 				"#...#     #.........#",
 				"#...#######.........#",
-				"#.o.......+.........#",
+				"#.o....t..+.........#",
 				"#...#######.........#   #############",
 				"#...#     #.........#   #......+....#",
 				"#...#######....o....#   #......######",
 				"######..............#   #...........#",
-				"     #..............#   ######.######",
+				"     #....t.........#   ######t######",
 				"#######+#####+#######        #.#",
 				"#........o#.........#        #.#",
-				"#.........#.........#        #.#",
+				"#......t..#...t.....#        #.#",
 				"#+###.....#+####+####        #.#",
 				"#...#.....#....#....##########.#",
-				"#...#.....#....#....+..........#",
+				"#...f.....#....#....f..........#",
 				"################################",
 			};
 
@@ -544,6 +582,14 @@ namespace NecroCore
 				if (row[static_cast<std::size_t>(x)] == 'o')
 				{
 					SpawnHostileAt(x, y);
+				} else if(row[static_cast<std::size_t>(x)] == 't')
+				{
+					StatusEffect randomEffect = (std::rand() % 2 == 0) ? StatusEffect::OnFire : StatusEffect::Poisoned;
+					SpawnTrapAt(x, y, randomEffect);
+				}
+				else if (row[static_cast<std::size_t>(x)] == 'f')
+				{
+					SpawnFireplaceAt(x, y, true);
 				}
 			}
 		}
@@ -569,6 +615,14 @@ namespace NecroCore
 	{
 		m_Map.convertTile(x, y, TileType::Trap);
 		m_Map.SetTileState(x, y, trapType);
+	}
+	void Game::SpawnFireplaceAt(int x, int y, bool isOnFire)
+	{
+		m_Map.convertTile(x, y, TileType::Fireplace);
+		if (isOnFire)
+		{
+			m_Map.SetTileState(x, y, StatusEffect::OnFire);
+		}
 	}
 	CommandResult Game::ApplyTurn(const std::string& command)
 	{
@@ -621,4 +675,4 @@ namespace NecroCore
 
 		return TrapMessageForActor(actor, trapEffect);
 	}
-}
+};

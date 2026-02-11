@@ -35,6 +35,9 @@
     <ClCompile Include="ElementalTest.cpp">
       <Filter>Command</Filter>
     </ClCompile>
+    <ClCompile Include="Fireplace.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

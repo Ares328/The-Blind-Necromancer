@@ -433,7 +433,7 @@ namespace NecroCore
 					}
 					else {
 						finalResult.description = "Your " + targetEntity->name + " moves " + direction + ".";
-						newState = EntityState::Guard;
+						targetEntity->aiState = EntityState::Guard;
 						finalResult.success = true;
 					}
 					break;

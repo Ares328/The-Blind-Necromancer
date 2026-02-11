@@ -42,9 +42,10 @@ namespace NecroCore
 
 		void SpawnTrapAt(int x, int y, StatusEffect trapType);
 		void SpawnDoorAt(int x, int y);
+		void SpawnFireplaceAt(int x, int y, bool isOnFire);
 
 		MoveResult MovePlayer(int dx, int dy);
-		MoveResult MoveEntity(Entity entity, int dx, int dy);
+		MoveResult MoveEntity(Entity& entity, int dx, int dy);
 
 		SummonResult SummonFriendlyNextToPlayer();
 

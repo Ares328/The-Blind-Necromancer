@@ -39,11 +39,9 @@ namespace NecroCore
 			return true;
 		case TileType::Door:
 			return true;
-		case TileType::Wall:
-			return false;
-		case TileType::Empty:
-			return false;
 		case TileType::Trap:
+			return true;
+		case TileType::Fireplace:
 			return true;
 		default:
 			return false;
@@ -75,6 +73,8 @@ namespace NecroCore
 				case '.': t = TileType::Floor; break;
 				case '+': t = TileType::Door;  break;
 				case 'o': t = TileType::Floor; break;
+				case 'f': t = TileType::Fireplace; break;
+				case 't': t = TileType::Trap; break;
 				case ' ':
 				default:
 					t = TileType::Empty;

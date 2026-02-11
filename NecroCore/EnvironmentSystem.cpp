@@ -146,6 +146,9 @@ namespace NecroCore
             if (!entity.IsAlive()) continue;
 
             StatusEffect entityTileEffect = map.GetTileState(entity.x, entity.y);
+
+            std::cout << "[Env] Entity " << entity.name << " at (" << entity.x << "," << entity.y
+                << ") tile status: " << (int)entityTileEffect << "\n";
             effectFromTile(entity, entityTileEffect);
 
             tickStatuses(entity, false);

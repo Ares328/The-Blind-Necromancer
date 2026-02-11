@@ -101,6 +101,7 @@
     <ClCompile Include="AttackTest.cpp" />
     <ClCompile Include="ElementalTest.cpp" />
     <ClCompile Include="EnvironmentTest.cpp" />
+    <ClCompile Include="Fireplace.cpp" />
     <ClCompile Include="GameTest.cpp" />
     <ClCompile Include="MoveTest.cpp" />
     <ClCompile Include="PathfindingTest.cpp" />

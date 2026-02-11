@@ -13,6 +13,7 @@ namespace NecroCore
 		Wall,
 		Door,
 		Trap,
+		Fireplace
 	};
 
 	class Map
@@ -30,6 +31,7 @@ namespace NecroCore
 		bool IsWalkable(int x, int y) const;
 		bool IsDoor(int x, int y) const { return GetTile(x, y) == TileType::Door; }
 		bool IsTrap(int x, int y) const { return GetTile(x, y) == TileType::Trap; }
+		bool IsFireplace(int x, int y) const { return GetTile(x, y) == TileType::Fireplace; }
 
 		void LoadFromAscii(const std::vector<std::string>& lines);
 

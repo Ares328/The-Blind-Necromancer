@@ -119,3 +119,12 @@ TEST(PulseTest, PulseCommandDoorToTheNorthWest)
 	EXPECT_TRUE(command.success);
 	EXPECT_NE(std::string::npos, command.description.find("There is a door to the north-west."));
 }
+TEST(PulseTest, PulseCommandDetectsFirePlace)
+{
+	Game game("Ares", "fire_place_test");
+
+	CommandResult command = game.ApplyCommand("pulse 5");
+	std::cout << command.description << "\n";
+	EXPECT_TRUE(command.success);
+	EXPECT_NE(std::string::npos, command.description.find("You feel gentle warmth and hear a soft crackling to the north."));
+}

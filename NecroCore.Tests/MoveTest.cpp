@@ -111,3 +111,12 @@ TEST(MoveTest, MoveCommandCorrectTillWall)
 	EXPECT_EQ(player.x, map.spawnX);
 	EXPECT_EQ(player.y, map.spawnY - 1);
 }
+
+TEST(MoveTest, MoveCommandWorksAtActiveFireplace)
+{
+	Game game("Ares", "fire_place_test");
+
+	CommandResult command = game.ApplyCommand("move north");
+	std::cout << command.description << "\n";
+	EXPECT_TRUE(command.success);
+}
