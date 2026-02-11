@@ -144,9 +144,9 @@ Examples of in-game commands:
   - `Pathfinder::FindFirstStepTowards` – pathfinding for AI movement.
   
 - **High-level architecture diagram**:
-- [Show class diagram (Google Drive)](https://drive.google.com/file/d/1LnlGdhzL7S6p9jxrtBrhepLgKeYekFbF/view?usp=sharing)
+- [Show diagram (Google Drive)](https://drive.google.com/file/d/1LnlGdhzL7S6p9jxrtBrhepLgKeYekFbF/view?usp=sharing)
 - **Turn sequence diagram**:
-- [Show class diagram (Google Drive)](https://drive.google.com/file/d/1Q83ZMkKHPUaamGqYvijAsCFLLKr5EHM5/view?usp=sharing)
+- [Show diagram (Google Drive)](https://drive.google.com/file/d/1Q83ZMkKHPUaamGqYvijAsCFLLKr5EHM5/view?usp=sharing)
 
 ---
 
