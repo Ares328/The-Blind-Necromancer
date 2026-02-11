@@ -54,7 +54,7 @@ TEST(PulseTest, PulseCommandDoorToTheNorth)
 	game.SpawnDoorAt(map.spawnX, map.spawnY - 1);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the north."));
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the north."));
 }
 TEST(PulseTest, PulseCommandDoorToTheSouth)
 {
@@ -63,7 +63,7 @@ TEST(PulseTest, PulseCommandDoorToTheSouth)
 	game.SpawnDoorAt(map.spawnX, map.spawnY + 1);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the south."));
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the south."));
 }
 TEST(PulseTest, PulseCommandDoorToTheNorthEast)
 {
@@ -72,16 +72,18 @@ TEST(PulseTest, PulseCommandDoorToTheNorthEast)
 	game.SpawnDoorAt(map.spawnX + 1, map.spawnY - 1);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the north-east."));
+	std::cout << command.description << "\n";
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the north-east."));
 }
 TEST(PulseTest, PulseCommandDoorToTheSouthEast)
 {
 	Game game("Ares");
 	Map map = game.GetMap();
-	game.SpawnDoorAt(map.spawnX + 1, map.spawnY + 1);
+	game.SpawnDoorAt(map.spawnX + 2, map.spawnY + 2);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the south-east."));
+	std::cout << command.description << "\n";
+	EXPECT_NE(std::string::npos, command.description.find("There is a door 1 step away to the south-east."));
 }
 TEST(PulseTest, PulseCommandDoorToTheEast)
 {
@@ -89,8 +91,9 @@ TEST(PulseTest, PulseCommandDoorToTheEast)
 	Map map = game.GetMap();
 	game.SpawnDoorAt(map.spawnX + 1, map.spawnY);
 	CommandResult command = game.ApplyCommand("pulse 5");
+	std::cout << command.description << "\n";
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the east."));
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the east."));
 }
 TEST(PulseTest, PulseCommandDoorToTheWest)
 {
@@ -99,7 +102,7 @@ TEST(PulseTest, PulseCommandDoorToTheWest)
 	game.SpawnDoorAt(map.spawnX - 1, map.spawnY);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the west."));
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the west."));
 }
 TEST(PulseTest, PulseCommandDoorToTheSouthWest)
 {
@@ -108,7 +111,7 @@ TEST(PulseTest, PulseCommandDoorToTheSouthWest)
 	game.SpawnDoorAt(map.spawnX - 1, map.spawnY + 1);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the south-west."));
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the south-west."));
 }
 TEST(PulseTest, PulseCommandDoorToTheNorthWest)
 {
@@ -117,7 +120,7 @@ TEST(PulseTest, PulseCommandDoorToTheNorthWest)
 	game.SpawnDoorAt(map.spawnX - 1, map.spawnY - 1);
 	CommandResult command = game.ApplyCommand("pulse 5");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("There is a door to the north-west."));
+	EXPECT_NE(std::string::npos, command.description.find("There is a door right next to you to the north-west."));
 }
 TEST(PulseTest, PulseCommandDetectsFirePlace)
 {
@@ -126,5 +129,5 @@ TEST(PulseTest, PulseCommandDetectsFirePlace)
 	CommandResult command = game.ApplyCommand("pulse 5");
 	std::cout << command.description << "\n";
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("You feel gentle warmth and hear a soft crackling to the north."));
+	EXPECT_NE(std::string::npos, command.description.find("You feel gentle warmth and hear a soft crackling right next to you to the north."));
 }

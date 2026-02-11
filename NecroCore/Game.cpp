@@ -11,6 +11,21 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <cmath>
+
+inline static std::string StepsPhrase(int distance)
+{
+	if (distance <= 1)
+		return "right next to you";
+	if (distance == 2)
+		return "1 step away";
+	return std::to_string(distance) + " steps away";
+}
+
+inline static int Distance(int x1, int y1, int x2, int y2)
+{
+	return std::max(std::abs(x1 - x2), std::abs(y1 - y2));
+}
 
 namespace NecroCore
 {
@@ -176,7 +191,11 @@ namespace NecroCore
 				result.description += " ";
 			}
 
-			result.description += "\nThere is a door to the ";
+			const int dist = Distance(playerX, playerY, tx, ty);
+
+			result.description += "\nThere is a door ";
+			result.description += StepsPhrase(dist);
+			result.description += " to the ";
 			result.description += dirName;
 			result.description += ".";
 		}
@@ -196,7 +215,11 @@ namespace NecroCore
 			if (!HasStatus(m_Map.GetTileState(tx, ty), StatusEffect::OnFire))
 				continue;
 
-			result.description += "\nYou feel gentle warmth and hear a soft crackling to the ";
+			const int dist = Distance(playerX, playerY, tx, ty);
+
+			result.description += "\nYou feel gentle warmth and hear a soft crackling ";
+			result.description += StepsPhrase(dist);
+			result.description += " to the ";
 			result.description += dirName;
 			result.description += ".";
 		}
@@ -218,26 +241,28 @@ namespace NecroCore
 
 			if (entity.faction == Faction::Hostile)
 			{
-				result.description += "a hostile presence";
+				result.description += "a hostile presence ";
 				result.detectedHostileCount += 1;
 			}
 			else if (entity.faction == Faction::Friendly)
 			{
-				result.description += "a friendly presence";
+				result.description += "a friendly presence ";
 				result.detectedFriendlyCount += 1;
 			}
 			else
 			{
-				result.description += "a presence";
+				result.description += "a presence ";
 			}
 
+			const int dist = Distance(playerX, playerY, entity.x, entity.y);
+
+			result.description += StepsPhrase(dist);
 			result.description += " to the ";
 			result.description += dirName;
 			result.description += ".";
 		}
 
 
-		// 3) Describe traps within reach
 		for (const auto& pos : reachable)
 		{
 			const int tx = pos.first;
@@ -256,20 +281,23 @@ namespace NecroCore
 
 			if (HasStatus(trapEffect, StatusEffect::OnFire))
 			{
-				result.description += "a fire trap";
+				result.description += "a fire trap ";
 				result.detectedTrapCount += 1;
 			}
 			else if (HasStatus(trapEffect, StatusEffect::Poisoned))
 			{
-				result.description += "a poison trap";
+				result.description += "a poison trap ";
 				result.detectedTrapCount += 1;
 			}
 			else
 			{
-				result.description += "a trap";
+				result.description += "a trap ";
 				result.detectedTrapCount += 1;
 			}
 
+			const int dist = Distance(playerX, playerY, tx, ty);
+
+			result.description += StepsPhrase(dist);
 			result.description += " to the ";
 			result.description += dirName;
 			result.description += ".";

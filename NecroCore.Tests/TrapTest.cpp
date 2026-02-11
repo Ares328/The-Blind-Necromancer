@@ -108,14 +108,14 @@ TEST(TrapTest, PulseCommandReportsNearbyTrapsInDescription)
     CommandResult cmd = game.ApplyTurn("pulse");
 
     const std::string desc = cmd.description;
-
+	std::cout << desc << "\n";
     EXPECT_NE(std::string::npos,
         desc.find("Your senses extend outward."));
 
     EXPECT_NE(std::string::npos,
-        desc.find("You sense a fire trap to the east"));
+        desc.find("You sense a fire trap right next to you to the east"));
     EXPECT_NE(std::string::npos,
-        desc.find("You sense a poison trap to the north"));
+        desc.find("You sense a poison trap 1 step away to the north"));
 }
 
 TEST(TrapTest, PulseCommandReportsFarAwayTrapsInDescription)
@@ -130,12 +130,13 @@ TEST(TrapTest, PulseCommandReportsFarAwayTrapsInDescription)
     game.SpawnTrapAt(px - 5, py + 3, StatusEffect::OnFire);
     CommandResult cmd = game.ApplyTurn("pulse");
     const std::string desc = cmd.description;
+	std::cout << desc << "\n";
     EXPECT_NE(std::string::npos,
         desc.find("Your senses extend outward."));
     EXPECT_NE(std::string::npos,
-        desc.find("You sense a fire trap to the east"));
+        desc.find("You sense a fire trap 5 steps away to the east."));
     EXPECT_NE(std::string::npos,
-		desc.find("You sense a poison trap to the north"));
+		desc.find("You sense a poison trap 3 steps away to the north."));
     EXPECT_NE(std::string::npos,
-        desc.find("You sense a fire trap to the south-west"));
+        desc.find("You sense a fire trap 5 steps away to the south-west."));
 }
