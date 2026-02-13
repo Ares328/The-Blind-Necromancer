@@ -18,7 +18,7 @@ TEST(SummonTest, SummonCommandReturnsDescription)
 	Game game("Ares");
 	auto command = game.ApplyCommand("summon skeleton");
 
-	EXPECT_EQ(command.description, "You summon a loyal servant from the shadows north of you.");
+	EXPECT_EQ(command.description, "You summon skeleton#1 from the shadows north of you.");
 }
 
 TEST(SummonTest, SummonCommandReturnsFalseOnMissingCreature)
@@ -91,7 +91,7 @@ TEST(SummonTest, SummonedEntitySpawnsNorthOfYou)
 	auto command = game.ApplyCommand("summon skeleton");
 	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
 	SummonResult res = std::get<SummonResult>(command.payload);
-	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows north of you."));
+	EXPECT_NE(std::string::npos, command.description.find("You summon skeleton#1 from the shadows north of you."));
 }
 TEST(SummonTest, SummonedEntitySpawnsEastOfYouIfNorthBlocked)
 {
@@ -104,7 +104,7 @@ TEST(SummonTest, SummonedEntitySpawnsEastOfYouIfNorthBlocked)
 	auto command = game.ApplyCommand("summon skeleton");
 	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
 	SummonResult res = std::get<SummonResult>(command.payload);
-	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows east of you."));
+	EXPECT_NE(std::string::npos, command.description.find("You summon skeleton#1 from the shadows east of you."));
 }
 TEST(SummonTest, SummonedEntitySpawnsEastOfYouIfNorthBlockedByHostile)
 {
@@ -117,7 +117,7 @@ TEST(SummonTest, SummonedEntitySpawnsEastOfYouIfNorthBlockedByHostile)
 	auto command = game.ApplyCommand("summon skeleton");
 	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
 	SummonResult res = std::get<SummonResult>(command.payload);
-	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows east of you."));
+	EXPECT_NE(std::string::npos, command.description.find("You summon skeleton#2 from the shadows east of you."));
 }
 TEST(SummonTest, SummonedEntitySpawnsNorthEastOfYouIfNorthIsBlockedBySummon)
 {
@@ -129,7 +129,8 @@ TEST(SummonTest, SummonedEntitySpawnsNorthEastOfYouIfNorthIsBlockedBySummon)
 	auto command = game.ApplyCommand("summon skeleton");
 	ASSERT_TRUE(std::holds_alternative<SummonResult>(command.payload));
 	SummonResult res = std::get<SummonResult>(command.payload);
-	EXPECT_NE(std::string::npos, command.description.find("You summon a loyal servant from the shadows north-east of you."));
+	std::cout << command.description << "\n";
+	EXPECT_NE(std::string::npos, command.description.find("You summon skeleton#2 from the shadows north-east of you."));
 }
 TEST(SummonTest, SummonedEntitySpawnFailOnAvailableTile)
 {
@@ -156,7 +157,8 @@ TEST(SummonTest, SummonedEntityDiesAfterAttack)
 	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1, "friendly undead");
 	auto command = game.ApplyTurn("command all guard");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("A hostile slays your summoned ally."));
+	std::cout << command.description << "\n";
+	EXPECT_NE(std::string::npos, command.description.find("A hostile slays your summoned ally (friendly undead)."));
 }
 
 TEST(SummonTest, SummonedEntityWontAttackBeyondAggroRange)
@@ -167,7 +169,7 @@ TEST(SummonTest, SummonedEntityWontAttackBeyondAggroRange)
 	game.SpawnFriendlyWithStatsForTest(5, 9, 1, 1, "friendly undead");
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_FALSE(command.success);
-	EXPECT_EQ(std::string::npos, command.description.find("Your summoned ally has no targets."));
+	EXPECT_EQ(std::string::npos, command.description.find("Your summoned ally (friendly undead) has no targets."));
 }
 TEST(SummonTest, SummonedEntityWillAttackWithinAggroRange)
 {
@@ -177,5 +179,5 @@ TEST(SummonTest, SummonedEntityWillAttackWithinAggroRange)
 	game.SpawnFriendlyWithStatsForTest(player.x + 1, player.y + 1, 1, 1, "friendly undead");
 	auto command = game.ApplyTurn("command all attack");
 	EXPECT_TRUE(command.success);
-	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally strikes at a foe."));
+	EXPECT_NE(std::string::npos, command.description.find("Your summoned ally (friendly undead) strikes at a foe."));
 }

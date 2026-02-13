@@ -307,7 +307,9 @@ namespace NecroCore
 				}
 
 				finalResult.payload = summonResult;
-				finalResult.description = "You summon a loyal servant from the shadows " + summonResult.summonedDirection + " of you.";
+				finalResult.description =
+					"You summon " + summonResult.summonedEntity.name +
+					" from the shadows " + summonResult.summonedDirection + " of you.";
 				finalResult.success = true;
 				break;
 			}

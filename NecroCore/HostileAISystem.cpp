@@ -154,11 +154,11 @@ namespace NecroCore
 			targetEntity->ApplyDamage(entity.attackDamage);
 			if (!targetEntity->IsAlive()) {
 				appendSeparator();
-				oss << "A hostile slays your summoned ally.";
+				oss << "A hostile slays your summoned ally (" << targetEntity->name << ").";
 			}
 			else {
 				appendSeparator();
-				oss << "A hostile lashes out at your summoned ally.";
+				oss << "A hostile lashes out at your summoned ally (" << targetEntity->name << ").";
 			}
 			return true;
 		}

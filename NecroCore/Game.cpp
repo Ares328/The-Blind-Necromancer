@@ -439,6 +439,7 @@ namespace NecroCore
 				friendlyEntity.hp = 5;
 				friendlyEntity.maxHp = 5;
 				friendlyEntity.attackDamage = 1;
+				friendlyEntity.name = "skeleton#" + std::to_string(friendlyEntity.id);
 
 				m_Entities.push_back(friendlyEntity);
 				result.summonedEntity = friendlyEntity;

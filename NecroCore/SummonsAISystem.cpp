@@ -40,6 +40,8 @@ namespace NecroCore
 				continue;
 			}
 
+			const std::string allyName = entity.name.empty() ? "Your summoned ally" : ("Your summoned ally (" + entity.name + ")");
+
 			switch (entity.aiState)
 			{
 			case EntityState::Idle:
@@ -68,7 +70,7 @@ namespace NecroCore
 					entity.x = targetX;
 					entity.y = targetY;
 					appendSeparator();
-					oss << "Your summoned ally moves closer to you.";
+					oss << allyName << " moves closer to you.";
 				}
 				break;
 			}
@@ -95,7 +97,7 @@ namespace NecroCore
 						entity.x = targetX;
 						entity.y = targetY;
 						appendSeparator();
-						oss << "Your summoned ally returns to its post.";
+						oss << allyName << " returns to its post.";
 					}
 				}
 				else
@@ -140,6 +142,8 @@ namespace NecroCore
 		Entity* closestHostile = nullptr;
 		int bestDistance = std::numeric_limits<int>::max();
 
+		const std::string allyName = entity.name.empty() ? "Your summoned ally" : ("Your summoned ally (" + entity.name + ")");
+
 		for (Entity& other : m_Entities)
 		{
 			if (other.faction != Faction::Hostile || other.hp <= 0)
@@ -156,7 +160,7 @@ namespace NecroCore
 		if (!closestHostile || bestDistance > entity.aggroRange)
 		{
 			appendSeparator();
-			oss << "Your summoned ally has no targets.";
+			oss << allyName << " has no targets.";
 			return false;
 		}
 
@@ -167,12 +171,12 @@ namespace NecroCore
 			if (!closestHostile->IsAlive())
 			{
 				appendSeparator();
-				oss << "Your summoned ally's foe crumbles into dust.";
+				oss << allyName << "'s foe crumbles into dust.";
 			}
 			else
 			{
 				appendSeparator();
-				oss << "Your summoned ally strikes at a foe.";
+				oss << allyName << " strikes at a foe.";
 			}
 			return true;
 		}
@@ -196,7 +200,7 @@ namespace NecroCore
 			entity.x = targetX;
 			entity.y = targetY;
 			appendSeparator();
-			oss << "Your summoned ally stalks a distant foe.";
+			oss << allyName << " stalks a distant foe.";
 			std::cout << "[ProcessSummonedTurn] Summoned ally " << entity.id << " moves to ("
 				<< entity.x << "," << entity.y << ") while targeting hostile "
 				<< closestHostile->id << " at (" << closestHostile->x << "," << closestHostile->y << ")\n";
