@@ -146,7 +146,7 @@ namespace NecroCore
 	}
 	PulseResult Game::Pulse() const
 	{
-		const int defaultRadius = 10;
+		const int defaultRadius = 3;
 		return Pulse(defaultRadius);
 	}
 	PulseResult Game::Pulse(int radius) const
