@@ -5,29 +5,6 @@
 
 using namespace NecroCore;
 
-TEST(ElementalTest, WaterSpellExtinguishesFireTileAndActorStatus)
-{
-    Game game("Ares");
-    Map& map = game.GetMap();
-    Player& player = game.GetPlayer();
-
-    const int tx = player.x + 1;
-    const int ty = player.y;
-
-    map.SetTileState(tx, ty, StatusEffect::OnFire);
-    game.SpawnHostileAt(tx, ty);
-    auto& entities = game.GetEntities();
-    ASSERT_FALSE(entities.empty());
-    Entity& hostile = entities.back();
-    hostile.AddStatus(StatusEffect::OnFire);
-
-    CommandResult cmd = game.ApplyTurn("cast water east");
-
-    EXPECT_EQ(map.GetTileState(tx, ty), StatusEffect::Normal);
-    EXPECT_FALSE(HasStatus(hostile.status, StatusEffect::OnFire));
-    EXPECT_NE(std::string::npos, cmd.description.find("Water splashes over the flames, extinguishing them."));
-}
-
 TEST(ElementalTest, WaterSpellDisarmsFireTrap)
 {
     Game game("Ares");
@@ -45,28 +22,6 @@ TEST(ElementalTest, WaterSpellDisarmsFireTrap)
     std::string moveDesc = moveCmd.description;
 
     EXPECT_EQ(std::string::npos, moveDesc.find("A hidden fire trap erupts beneath"));
-}
-
-TEST(ElementalTest, WaterSpellExtinguishesFireOnPlayer)
-{
-    Game game("Ares");
-    Map& map = game.GetMap();
-    Player& player = game.GetPlayer();
-
-    const int tx = player.x + 1;
-    const int ty = player.y;
-
-    map.SetTileState(tx, ty, StatusEffect::OnFire);
-
-    CommandResult moveCmd = game.ApplyTurn("move east");
-    ASSERT_TRUE(HasStatus(player.status, StatusEffect::OnFire));
-
-    CommandResult castCmd = game.ApplyTurn("cast water self");
-	std::cout << "[Test] Cast water self: " << castCmd.description << "\n";
-
-    EXPECT_FALSE(HasStatus(player.status, StatusEffect::OnFire));
-    EXPECT_NE(std::string::npos,
-        castCmd.description.find("Water splashes over the flames, extinguishing them."));
 }
 
 TEST(ElementalTest, WaterSpellInvalidDirectionGivesErrorMessage)
@@ -101,8 +56,18 @@ TEST(ElementalTest, UnknownElementSpellDoesNothing)
 {
     Game game("Ares");
 
-    CommandResult cmd = game.ApplyTurn("cast fire east");
-
+    CommandResult cmd = game.ApplyTurn("cast rock east");
+	std::cout << cmd.description << "\n";
     EXPECT_NE(std::string::npos,
-        cmd.description.find("You cast a spell of fire towards east, but nothing happens."));
+        cmd.description.find("The arcane forces reject your unknown element: rock."));
+}
+
+TEST(ElementalTest, KnownElementUnknownSpellDoesNothing)
+{
+    Game game("Ares");
+
+    CommandResult cmd = game.ApplyTurn("cast poison east");
+    std::cout << cmd.description << "\n";
+    EXPECT_NE(std::string::npos,
+        cmd.description.find("You cast a spell of poison towards east, but nothing happens."));
 }

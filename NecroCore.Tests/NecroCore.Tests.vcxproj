@@ -107,6 +107,7 @@
     <ClCompile Include="PathfindingTest.cpp" />
     <ClCompile Include="PlayerTest.cpp" />
     <ClCompile Include="PulseTest.cpp" />
+    <ClCompile Include="Spells.cpp" />
     <ClCompile Include="SummonCommandTest.cpp" />
     <ClCompile Include="SummonTest.cpp" />
     <ClCompile Include="TrapTest.cpp" />

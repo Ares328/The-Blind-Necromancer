@@ -142,19 +142,23 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EnvironmentSystem.cpp" />
     <ClCompile Include="EnvironmentSystem.h" />
+    <ClCompile Include="FireSpell.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HostileAISystem.cpp" />
     <ClCompile Include="HostileAISystem.h" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
+    <ClCompile Include="Spell.cpp" />
     <ClCompile Include="SummonsAISystem.cpp" />
     <ClCompile Include="SummonsAISystem.h" />
+    <ClCompile Include="WaterSpell.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
     <ClInclude Include="AttackResult.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Pathfinding.h" />
+    <ClInclude Include="Spell.h" />
     <ClInclude Include="Status.h" />
     <ClInclude Include="SummonCommandResult.h" />
     <ClInclude Include="CommandSerialization.h" />

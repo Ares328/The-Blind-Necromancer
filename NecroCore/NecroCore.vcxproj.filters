@@ -49,6 +49,12 @@
     <Filter Include="Header Files\Effects">
       <UniqueIdentifier>{91772bed-99e2-4691-a882-6864e9535f2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Spells">
+      <UniqueIdentifier>{d91e0b8f-db1c-46ce-a7f8-2f49cef9a493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Spells">
+      <UniqueIdentifier>{08d0452d-578b-42bf-a4b5-48cbda1252a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -86,6 +92,15 @@
     </ClCompile>
     <ClCompile Include="CastResult.h">
       <Filter>Header Files\Command\Results</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterSpell.cpp">
+      <Filter>Source Files\Spells</Filter>
+    </ClCompile>
+    <ClCompile Include="FireSpell.cpp">
+      <Filter>Source Files\Spells</Filter>
+    </ClCompile>
+    <ClCompile Include="Spell.cpp">
+      <Filter>Source Files\Spells</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="Status.h">
       <Filter>Header Files\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Spell.h">
+      <Filter>Header Files\Spells</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

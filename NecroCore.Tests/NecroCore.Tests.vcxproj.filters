@@ -38,6 +38,9 @@
     <ClCompile Include="Fireplace.cpp">
       <Filter>Environment</Filter>
     </ClCompile>
+    <ClCompile Include="Spells.cpp">
+      <Filter>Spells</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -54,6 +57,9 @@
     </Filter>
     <Filter Include="Environment">
       <UniqueIdentifier>{2755f015-d2b9-457d-85d5-937566bf601b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Spells">
+      <UniqueIdentifier>{77ff40f3-0c0c-4cec-9f00-6974b2d6df6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
