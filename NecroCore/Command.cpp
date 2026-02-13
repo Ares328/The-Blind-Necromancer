@@ -39,11 +39,11 @@ namespace NecroCore
 		{
 			result.action = CommandAction::Pulse;
 
-			int radius = 10;
+			int radius = 5;
 
 			if (!(iss >> radius))
 			{
-				radius = 10;
+				radius = 5;
 			}
 
 			result.args["radius"] = radius;
@@ -190,7 +190,7 @@ namespace NecroCore
 		{
 			case CommandAction::Pulse:
 			{
-				int radius = 10;
+				int radius = 5;
 
 				auto it = command.args.find("radius");
 				if (it != command.args.end() && std::holds_alternative<int>(it->second))
@@ -482,7 +482,7 @@ namespace NecroCore
 					"  summon skeleton\n"
 					"  command <target> (all) <follow|guard|attack|move> [direction]\n"
 					"  wait\n"
-					" directions: north, south, east, west, north-east, north-west, south-east, south-west";
+					"  directions: north, south, east, west, north-east, north-west, south-east, south-west";
 				finalResult.success = true;
 				break;
 			}
