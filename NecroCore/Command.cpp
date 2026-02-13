@@ -166,6 +166,12 @@ namespace NecroCore
 			result.description = "You wait for a moment.";
 			result.success = true;
 		}
+		else if (verb == "help")
+		{
+			result.action = CommandAction::Help;
+			result.description = "Help command parsed.";
+			result.success = true;
+		}
 		else
 		{
 			result.action = CommandAction::Unknown;
@@ -459,6 +465,22 @@ namespace NecroCore
 				}
 
 				finalResult.description = "Your will ripples through the ranks of your summoned allies.";
+				finalResult.success = true;
+				break;
+			}
+			case CommandAction::Help:
+			{
+				finalResult.description =
+					"Commands:\n"
+					"  help\n"
+					"  pulse [radius]\n"
+					"  move [direction]\n"
+					"  attack [direction]\n"
+					"  cast <fire|water> [direction|self]\n"
+					"  summon skeleton\n"
+					"  command <target> (all) <follow|guard|attack|move> [direction]\n"
+					"  wait\n"
+					" directions: north, south, east, west, north-east, north-west, south-east, south-west";
 				finalResult.success = true;
 				break;
 			}

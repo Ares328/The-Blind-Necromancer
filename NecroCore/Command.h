@@ -21,6 +21,7 @@ namespace NecroCore
 		Attack,
 		SummonCommand,
 		Cast,
+		Help
 	};
 
 	using ArgValue = std::variant<int, float, std::string, bool>;
